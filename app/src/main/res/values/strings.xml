@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Habitizer</string>
+    <string name="app_title">Habitizer</string>
+    <string name="adds_new_task">Adds new Task</string>
+    <string name="task_name">Task Name</string>
+    <string name="append">Append</string>
+    <string name="prepend">Prepend</string>
+    <string name="card_back_text">Card Back Text</string>
+    <string name="card_front_text">Card Front Text</string>
 </resources>
