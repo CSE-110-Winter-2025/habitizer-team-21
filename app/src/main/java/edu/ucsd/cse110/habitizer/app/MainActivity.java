@@ -14,20 +14,19 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding view;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.app_title);
 
         // View Binding
         this.view = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(view.getRoot());
+    }
 
-        // Load CardListFragment on startup
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, CardListFragment.newInstance())
-                    .commit();
-        }
+    private void openRoutine(){
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, CardListFragment.newInstance())
+                .commit();
     }
 }
