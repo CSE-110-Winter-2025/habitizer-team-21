@@ -7,22 +7,25 @@
 
     <Button
         android:id="@+id/morning_button"
-        android:layout_width="305dp"
-        android:layout_height="287dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="290dp"
+        android:layout_height="290dp"
+        android:backgroundTint="#0770C8"
         android:text="Morning Routine"
         android:textSize="48sp"
+        app:layout_constraintBottom_toTopOf="@+id/evening_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/app_title" />
 
     <TextView
         android:id="@+id/app_title"
-        android:layout_width="187dp"
-        android:layout_height="67dp"
+        android:layout_width="206dp"
+        android:layout_height="57dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:fontFamily="@font/ubuntu"
         android:text="Habitizer"
+        android:textAlignment="center"
+        android:textAllCaps="false"
         android:textAppearance="@style/TextAppearance.AppCompat.Display2"
         app:layout_constraintBottom_toTopOf="@+id/morning_button"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,8 +34,10 @@
 
     <Button
         android:id="@+id/evening_button"
-        android:layout_width="305dp"
-        android:layout_height="289dp"
+        android:layout_width="290dp"
+        android:layout_height="290dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#123F62"
         android:text="Evening Routine"
         android:textSize="48sp"
         app:layout_constraintBottom_toBottomOf="parent"
