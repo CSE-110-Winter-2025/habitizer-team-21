@@ -24,6 +24,8 @@ public class Task implements Serializable{
 
     public @NonNull String task(){return task;}
 
+    public @NonNull Boolean completed(){ return completed;}
+
     @Override
     public boolean equals(Object o){
         if(this==o) return true;

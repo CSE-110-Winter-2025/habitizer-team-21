@@ -36,4 +36,16 @@ public class TaskTest {
         assertEquals(task1, task2);
         assertNotEquals(task1, task3);
     }
+
+    @Test
+    public void testCompletion(){
+        var task1 = new Task(1,"task",0);
+        var task2 = new Task(1,"task",1);
+        var task3 = new Task(2,"task", 2);
+
+        task1.complete();
+
+        assertTrue(task1.completed());
+        assertFalse(task2.completed());
+    }
 }
