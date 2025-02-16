@@ -69,6 +69,7 @@ public class CardListFragment extends Fragment {
             dialogFragment.show(getParentFragmentManager(), "CreateCardDialogFragment");
         });
 
+        setupMvp();
 
         return binding.getRoot();
     }
@@ -79,5 +80,23 @@ public class CardListFragment extends Fragment {
         } else {
             activityModel.prepend(task);
         }
+    }
+    private void setupMvp() {
+        activityModel.getRoutineButton().observe(text -> binding.routineButton.setText(text));
+
+        binding.routineButton.setOnClickListener(v -> {
+            activityModel.toggleRoutine();
+
+            String buttonText = binding.routineButton.getText().toString();
+
+            if ("Routine Complete".equals(buttonText)) {
+                binding.routineButton.setEnabled(false);
+                binding.routineButton.setBackgroundColor(android.graphics.Color.parseColor("#B0B0B0"));
+            } else {
+                binding.routineButton.setEnabled(true);
+                int color = "End Routine".equals(buttonText) ? android.graphics.Color.parseColor("#FF6347") : android.graphics.Color.parseColor("#4CAF50");
+                binding.routineButton.setBackgroundColor(color);
+            }
+        });
     }
 }
