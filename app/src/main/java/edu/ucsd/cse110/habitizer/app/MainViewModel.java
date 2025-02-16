@@ -19,7 +19,6 @@ import edu.ucsd.cse110.habitizer.lib.util.Subject;
 public class MainViewModel extends ViewModel {
     private final Subject<List<Task>> orderedTasks;
     private final TaskRepository taskRepository;
-    private final Subject<List<String>> orderedTasks;
     private final Subject<Boolean> isRoutineStarted;
     private final Subject<String> routineButtonLabel;
     private final Subject<Boolean> isRoutineCompleted;
@@ -41,8 +40,6 @@ public class MainViewModel extends ViewModel {
         this.isRoutineStarted.setValue(false);
         this.isRoutineCompleted = new Subject<>();
         this.isRoutineCompleted.setValue(false);
-        this.orderedTasks = new Subject<>();
-        this.orderedTasks.setValue(new ArrayList<>()); // Initialize with an empty list
         this.isRoutineStarted.setValue(false);
         this.routineButtonLabel = new Subject<>();
         updateRoutineButton();
