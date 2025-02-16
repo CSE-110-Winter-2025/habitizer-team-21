@@ -14,10 +14,11 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemCardBinding;
+import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
-public class CardListAdapter extends ArrayAdapter<String> {
+public class CardListAdapter extends ArrayAdapter<Task> {
 
-    public CardListAdapter(Context context, List<String> tasks) {
+    public CardListAdapter(Context context, List<Task> tasks) {
         super(context, 0, new ArrayList<>(tasks)); // Ensuring a mutable list
     }
 
@@ -33,11 +34,11 @@ public class CardListAdapter extends ArrayAdapter<String> {
             binding = ListItemCardBinding.inflate(layoutInflater, parent, false);
         }
 
-        String task = getItem(position);
+        Task task = getItem(position);
         assert task != null;
 
         // Set task text
-        binding.Task.setText(task);
+        binding.Task.setText(task.task());
 
         return binding.getRoot();
     }
