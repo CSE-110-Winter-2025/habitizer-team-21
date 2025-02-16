@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentCardListBinding;
 import edu.ucsd.cse110.habitizer.app.ui.tasklist.dialog.CreateTaskFragment;
+import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class CardListFragment extends Fragment {
     private MainViewModel activityModel;
@@ -25,7 +26,10 @@ public class CardListFragment extends Fragment {
     }
 
     public static CardListFragment newInstance() {
-        return new CardListFragment();
+        CardListFragment fragment = new CardListFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -74,7 +78,7 @@ public class CardListFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private void addTask(String task, boolean append) {
+    private void addTask(Task task, boolean append) {
         if (append) {
             activityModel.append(task);
         } else {

@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentDialogCreateTaskBinding;
-
+import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 
 public class CreateTaskFragment extends DialogFragment {
@@ -45,15 +45,16 @@ public class CreateTaskFragment extends DialogFragment {
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var taskName = binding.taskName.getText().toString();
 
+        var task = new Task(null, taskName, -1);
         if (taskName.trim().isEmpty()) {
             dialog.dismiss();
             return;
         }
 
         if (binding.appendRadioBtn.isChecked()) {
-            activityModel.append(taskName);
+            activityModel.append(task);
         } else if (binding.prependRadioBtn.isChecked()) {
-            activityModel.prepend(taskName);
+            activityModel.prepend(task);
         } else {
             throw new IllegalStateException("No radio button is checked.");
         }
