@@ -3,8 +3,6 @@ package edu.ucsd.cse110.habitizer.lib.domain;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.base.Objects;
-
 import java.util.Objects;
 
 public class Tasks {
