@@ -29,4 +29,18 @@
 
     </ListView>
 
+    <Button
+        android:id="@+id/routine_button"
+        android:layout_width="311dp"
+        android:layout_height="57dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#4CAF50"
+        android:fontFamily="@font/ubuntu"
+        android:text="Start Routine"
+        android:textSize="24sp"
+        android:typeface="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/floatingActionButton"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
