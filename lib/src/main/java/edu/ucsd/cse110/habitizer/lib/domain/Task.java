@@ -47,4 +47,8 @@ public class Task implements Serializable{
         return new Task(id, this.task, this.sortOrder);
     }
 
+    public void complete(){
+        this.completed = true;
+    }
+
 }
