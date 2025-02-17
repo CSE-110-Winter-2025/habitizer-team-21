@@ -29,8 +29,9 @@ import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 
 public class MainViewModel extends ViewModel {
+    private Subject<Boolean> isEvening;
     private final Subject<List<Task>> orderedTasks;
-    private final TaskRepository taskRepository;
+    private TaskRepository taskRepository;
     private final HashSet<Integer> strikethroughItems;
 
 
@@ -50,6 +51,8 @@ public class MainViewModel extends ViewModel {
         this.orderedTasks = new Subject<>();
         this.orderedTasks.setValue(new ArrayList<>()); // Initialize with an empty list
         this.strikethroughItems = new HashSet<>();
+        this.isEvening = new Subject<>();
+        isEvening.setValue(false);
 
         taskRepository.findAll().observe(cards -> {
             if (cards == null) return; // not ready yet, ignore
@@ -84,6 +87,40 @@ public class MainViewModel extends ViewModel {
     }
     public boolean isTaskStruckThrough(int position) {
         return strikethroughItems.contains(position);
+    }
+
+    public void evening(){
+        taskRepository = HabitizerApplication.eveningTasks();
+        taskRepository.findAll().observe(cards -> {
+            if (cards == null) return; // not ready yet, ignore
+
+            var newOrderedCards = cards.stream()
+                    .sorted(Comparator.comparingInt(Task::sortOrder))
+                    .collect(Collectors.toList());
+
+            orderedTasks.setValue(newOrderedCards);
+            isEvening.setValue(true);
+        });
+
+    }
+
+    public void morning(){
+        taskRepository = HabitizerApplication.morningTasks();
+        taskRepository.findAll().observe(cards -> {
+            if (cards == null) return; // not ready yet, ignore
+
+            var newOrderedCards = cards.stream()
+                    .sorted(Comparator.comparingInt(Task::sortOrder))
+                    .collect(Collectors.toList());
+
+            orderedTasks.setValue(newOrderedCards);
+            isEvening.setValue(false);
+        });
+
+    }
+
+    public boolean isEvening(){
+        return isEvening.getValue();
     }
 
 }

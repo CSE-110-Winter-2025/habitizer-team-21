@@ -92,6 +92,14 @@ public class CardListFragment extends Fragment {
     private void setupMvp() {
         binding.routineButton.setText(getRoutineLabel());
 
+        var isEvening = activityModel.isEvening();
+        if(isEvening){
+            binding.routineTitle.setText("Evening Routine");
+        }
+        else{
+            binding.routineTitle.setText("Morning Routine");
+        }
+
         binding.routineButton.setOnClickListener(v -> {
             toggleRoutine();
 
