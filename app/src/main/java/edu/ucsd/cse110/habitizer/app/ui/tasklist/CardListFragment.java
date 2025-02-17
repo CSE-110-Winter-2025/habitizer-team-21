@@ -41,7 +41,6 @@ public class CardListFragment extends Fragment {
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
-
         // Initialize the Adapter with an empty list
         this.adapter = new CardListAdapter(requireContext(), new ArrayList<>());
 
@@ -92,7 +91,6 @@ public class CardListFragment extends Fragment {
             activityModel.toggleRoutine();
 
             String buttonText = binding.routineButton.getText().toString();
-
             if ("Routine Complete".equals(buttonText)) {
                 binding.routineButton.setEnabled(false);
                 binding.routineButton.setBackgroundColor(android.graphics.Color.parseColor("#B0B0B0"));

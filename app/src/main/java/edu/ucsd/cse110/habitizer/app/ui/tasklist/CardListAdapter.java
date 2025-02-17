@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
 import java.util.function.Consumer;
-
+import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemCardBinding;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
@@ -23,6 +23,7 @@ public class CardListAdapter extends ArrayAdapter<Task> {
     private final HashSet<Integer> struckThroughTasks = new HashSet<>();
     public CardListAdapter(Context context, List<Task> tasks) {
         super(context, 0, new ArrayList<>(tasks)); // Ensuring a mutable list
+
     }
 
     @NonNull
@@ -46,20 +47,14 @@ public class CardListAdapter extends ArrayAdapter<Task> {
         // Applying strikethrough if the task was previously clicked on
         if (struckThroughTasks.contains(position)) {
             binding.Task.setPaintFlags(binding.Task.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-        } else {
-            binding.Task.setPaintFlags(binding.Task.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
 
 
         // Toggle strikethrough on click for each task
         binding.getRoot().setOnClickListener(v -> {
-            if (struckThroughTasks.contains(position)) {
-                struckThroughTasks.remove(position);
-                binding.Task.setPaintFlags(binding.Task.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-            } else {
+            if (!(struckThroughTasks.contains(position))) {
                 struckThroughTasks.add(position);
-                binding.Task.setPaintFlags(binding.Task.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            }
+                binding.Task.setPaintFlags(binding.Task.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);            }
         });
 
 
