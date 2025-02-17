@@ -46,8 +46,16 @@ public class CardListAdapter extends ArrayAdapter<Task> {
         binding.Task.setText(task.task());
 
         if(task.getTimeSpent() > 0) {
-            long seconds = task.getTimeSpent() / 1000;
-            binding.timeSpent.setText("Time: " + seconds + "s");
+            long ms = task.getTimeSpent();
+            long minutes = ms / 60000;
+            long seconds = (ms % 60000) / 1000;
+            if(seconds <= 30){
+                minutes = minutes + 1;
+            }
+            task.setDisplayedTime(minutes);
+            binding.timeSpent.setText("Time: " + minutes + "m");
+            //activityModel.getOrderedTasks().setValue(activityModel.getOrderedTasks().getValue());
+
         } else {
             binding.timeSpent.setText("");
         }

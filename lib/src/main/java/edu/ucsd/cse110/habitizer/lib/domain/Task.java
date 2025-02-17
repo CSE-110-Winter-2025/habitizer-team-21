@@ -15,6 +15,8 @@ public class Task implements Serializable{
 
     private long timeSpent;
 
+    private long timeDisplayed;
+
     public Task(@Nullable Integer id, @NonNull String task, int sortOrder){
         this.completed = false;
         this.id = id;
@@ -63,5 +65,9 @@ public class Task implements Serializable{
     public void setTimeSpent(long timeSpent){
         this.timeSpent = timeSpent;
     }
+
+    public long getDisplayedTime(){ return this.timeDisplayed;}
+
+    public void setDisplayedTime(long timeDisplayed){this.timeDisplayed = timeDisplayed;}
 
 }

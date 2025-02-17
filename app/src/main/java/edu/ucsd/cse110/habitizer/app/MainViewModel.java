@@ -74,6 +74,9 @@ public class MainViewModel extends ViewModel {
                     .collect(Collectors.toList());
 
             orderedTasks.setValue(newOrderedCards);
+
+            long total = newOrderedCards.stream().mapToLong(Task::getDisplayedTime).sum();
+            totalRoutineTime.setValue(total);
         });
 
     }
@@ -130,8 +133,16 @@ public class MainViewModel extends ViewModel {
             isRoutineCompleted.setValue(newState);
             updateRoutineButton();
             if(newState){
-                long endTime = System.currentTimeMillis();
-                long total = endTime - routineStartTime;
+                var tasks = orderedTasks.getValue();
+                if(tasks == null){
+                    totalRoutineTime.setValue(0L);
+                    return;
+                }
+
+                long total = 0;
+                for (Task t : tasks){
+                    total += t.getDisplayedTime();
+                }
                 totalRoutineTime.setValue(total);
             }
         }
@@ -152,9 +163,30 @@ public class MainViewModel extends ViewModel {
             long timeSpentThisTask = now - lastTaskStartTime;
             lastTaskStartTime = now;
 
+            long m = timeSpentThisTask / 60000;
+            long s = (timeSpentThisTask %60000) / 1000;
+            if (s >= 30){
+                m++;
+            }
+            task.setDisplayedTime(m);
             task.setTimeSpent(timeSpentThisTask);
             task.complete();
             taskRepository.save(task);
+            var currentTasks = orderedTasks.getValue();
+            if(currentTasks != null){
+                for (int i = 0; i < currentTasks.size(); i++){
+                    if (currentTasks.get(i).id().equals(task.id())){
+                        currentTasks.set(i, task);
+                        break;
+                    }
+                }
+                long total = 0;
+                for (Task t : currentTasks) {
+                    total += t.getDisplayedTime();
+                }
+                totalRoutineTime.setValue(total);
+                orderedTasks.setValue(currentTasks);
+            }
         }
     }
 

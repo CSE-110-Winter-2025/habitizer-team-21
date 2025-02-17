@@ -89,13 +89,11 @@ public class CardListFragment extends Fragment {
         }
     }
     private void setupMvp() {
-        activityModel.getTotalRoutineTime().observe(totalMS ->{
-            long totalSeconds = totalMS / 1000;
-            if(requireActivity() instanceof AppCompatActivity){
-                AppCompatActivity appCompatActivity = (AppCompatActivity) requireActivity();
-                if(appCompatActivity.getSupportActionBar() != null){
-                    appCompatActivity.getSupportActionBar().setTitle("Habitizer                  Routine Time: " + totalSeconds + "s");
-                }
+        activityModel.getTotalRoutineTime().observe(totalM ->{
+            long totalminutes = totalM;
+            AppCompatActivity appCompatActivity = (AppCompatActivity) requireActivity();
+            if(appCompatActivity.getSupportActionBar() != null){
+                appCompatActivity.getSupportActionBar().setTitle("Habitizer                  Routine Time: " + totalminutes + "m");
             }
         });
         activityModel.getRoutineButton().observe(text -> binding.routineButton.setText(text));
