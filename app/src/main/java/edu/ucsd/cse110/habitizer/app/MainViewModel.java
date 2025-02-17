@@ -31,9 +31,6 @@ import edu.ucsd.cse110.habitizer.lib.util.Subject;
 public class MainViewModel extends ViewModel {
     private final Subject<List<Task>> orderedTasks;
     private final TaskRepository taskRepository;
-    private final Subject<Boolean> isRoutineStarted;
-    private final Subject<String> routineButtonLabel;
-    private final Subject<Boolean> isRoutineCompleted;
     private final HashSet<Integer> strikethroughItems;
 
 
@@ -49,12 +46,6 @@ public class MainViewModel extends ViewModel {
 
 
     public MainViewModel(TaskRepository taskRepository) {
-        this.isRoutineStarted = new Subject<>();
-        this.isRoutineStarted.setValue(false);
-        this.isRoutineCompleted = new Subject<>();
-        this.isRoutineCompleted.setValue(false);
-        this.routineButtonLabel = new Subject<>();
-        updateRoutineButton();
         this.taskRepository = taskRepository;
         this.orderedTasks = new Subject<>();
         this.orderedTasks.setValue(new ArrayList<>()); // Initialize with an empty list
@@ -84,10 +75,6 @@ public class MainViewModel extends ViewModel {
         taskRepository.prepend(task);
     }
 
-    public Subject<String> getRoutineButton() {
-        return routineButtonLabel;
-    }
-
     public void toggleTaskStrikeThrough(int position) {
         if (strikethroughItems.contains(position)) {
             strikethroughItems.remove(position);
@@ -97,34 +84,6 @@ public class MainViewModel extends ViewModel {
     }
     public boolean isTaskStruckThrough(int position) {
         return strikethroughItems.contains(position);
-    }
-
-
-    // Call this method whenever routine state changes
-    private void updateRoutineButton() {
-        if (Boolean.TRUE.equals(isRoutineStarted.getValue()) && Boolean.FALSE.equals(isRoutineCompleted.getValue())) {
-            routineButtonLabel.setValue("End Routine");
-        }
-        else if (Boolean.TRUE.equals(isRoutineCompleted.getValue())){
-            routineButtonLabel.setValue("Routine Complete");
-        }
-        else{
-            routineButtonLabel.setValue("Start Routine");
-        }
-    }
-
-    // Function to toggle routine state
-    public void toggleRoutine() {
-        if(Boolean.TRUE.equals(isRoutineStarted.getValue())){
-            boolean newState = !Boolean.TRUE.equals(isRoutineCompleted.getValue());
-            isRoutineCompleted.setValue(newState);
-            updateRoutineButton();
-        }
-        else {
-            boolean newState = !Boolean.TRUE.equals(isRoutineStarted.getValue());
-            isRoutineStarted.setValue(newState);
-            updateRoutineButton();
-        }// Update button text
     }
 
 }
