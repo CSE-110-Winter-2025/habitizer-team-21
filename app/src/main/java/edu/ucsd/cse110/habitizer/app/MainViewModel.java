@@ -2,6 +2,18 @@ package edu.ucsd.cse110.habitizer.app;
 
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 
+import android.widget.Button;
+import android.widget.ListView;
+import android.graphics.Paint;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.HashSet;
+
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
@@ -22,6 +34,7 @@ public class MainViewModel extends ViewModel {
     private final Subject<Boolean> isRoutineStarted;
     private final Subject<String> routineButtonLabel;
     private final Subject<Boolean> isRoutineCompleted;
+    private final HashSet<Integer> strikethroughItems;
 
     private long routineStartTime;
     private long lastTaskStartTime;
@@ -44,7 +57,6 @@ public class MainViewModel extends ViewModel {
         this.isRoutineStarted.setValue(false);
         this.isRoutineCompleted = new Subject<>();
         this.isRoutineCompleted.setValue(false);
-        this.isRoutineStarted.setValue(false);
         this.routineButtonLabel = new Subject<>();
         this.totalRoutineTime = new Subject<>();
         this.totalRoutineTime.setValue(0L);
@@ -52,6 +64,7 @@ public class MainViewModel extends ViewModel {
         this.taskRepository = taskRepository;
         this.orderedTasks = new Subject<>();
         this.orderedTasks.setValue(new ArrayList<>()); // Initialize with an empty list
+        this.strikethroughItems = new HashSet<>();
 
         taskRepository.findAll().observe(cards -> {
             if (cards == null) return; // not ready yet, ignore
@@ -80,6 +93,18 @@ public class MainViewModel extends ViewModel {
     public Subject<String> getRoutineButton() {
         return routineButtonLabel;
     }
+
+    public void toggleTaskStrikeThrough(int position) {
+        if (strikethroughItems.contains(position)) {
+            strikethroughItems.remove(position);
+        } else {
+            strikethroughItems.add(position);
+        }
+    }
+    public boolean isTaskStruckThrough(int position) {
+        return strikethroughItems.contains(position);
+    }
+
 
     // Call this method whenever routine state changes
     private void updateRoutineButton() {
