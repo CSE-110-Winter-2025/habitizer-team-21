@@ -6,20 +6,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.graphics.Paint;
 
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
 import java.util.function.Consumer;
-
+import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemCardBinding;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class CardListAdapter extends ArrayAdapter<Task> {
-
+    private boolean checkEnabled;
+    private final HashSet<Integer> struckThroughTasks = new HashSet<>();
     public CardListAdapter(Context context, List<Task> tasks) {
         super(context, 0, new ArrayList<>(tasks)); // Ensuring a mutable list
+        checkEnabled = false;
     }
 
     @NonNull
@@ -40,6 +44,21 @@ public class CardListAdapter extends ArrayAdapter<Task> {
         // Set task text
         binding.Task.setText(task.task());
 
+        // Applying strikethrough if the task was previously clicked on
+        if (struckThroughTasks.contains(position)) {
+            binding.Task.setPaintFlags(binding.Task.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        }
+
+
+        // Toggle strikethrough on click for each task
+        binding.getRoot().setOnClickListener(v -> {
+            if (!(struckThroughTasks.contains(position)) && checkEnabled) {
+                struckThroughTasks.add(position);
+                binding.Task.setPaintFlags(binding.Task.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);            }
+        });
+
+
+
         return binding.getRoot();
     }
 
@@ -51,5 +70,13 @@ public class CardListAdapter extends ArrayAdapter<Task> {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    public void enableCheck(){
+        this.checkEnabled = true;
+    }
+
+    public void disableCheck(){
+        this.checkEnabled = false;
     }
 }

@@ -20,6 +20,8 @@ public class CardListFragment extends Fragment {
     private MainViewModel activityModel;
     private FragmentCardListBinding binding;
     private CardListAdapter adapter;
+    private boolean isRoutineStarted;
+    private boolean isRoutineCompleted;
 
     public CardListFragment() {
         // Required empty public constructor
@@ -41,7 +43,6 @@ public class CardListFragment extends Fragment {
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
-
         // Initialize the Adapter with an empty list
         this.adapter = new CardListAdapter(requireContext(), new ArrayList<>());
 
@@ -52,6 +53,9 @@ public class CardListFragment extends Fragment {
             adapter.addAll(new ArrayList<>(tasks)); // Ensure mutable copy
             adapter.notifyDataSetChanged();
         });
+
+        this.isRoutineCompleted = false;
+        this.isRoutineStarted = false;
     }
 
     @Nullable
@@ -86,13 +90,12 @@ public class CardListFragment extends Fragment {
         }
     }
     private void setupMvp() {
-        activityModel.getRoutineButton().observe(text -> binding.routineButton.setText(text));
+        binding.routineButton.setText(getRoutineLabel());
 
         binding.routineButton.setOnClickListener(v -> {
-            activityModel.toggleRoutine();
+            toggleRoutine();
 
             String buttonText = binding.routineButton.getText().toString();
-
             if ("Routine Complete".equals(buttonText)) {
                 binding.routineButton.setEnabled(false);
                 binding.routineButton.setBackgroundColor(android.graphics.Color.parseColor("#B0B0B0"));
@@ -102,5 +105,39 @@ public class CardListFragment extends Fragment {
                 binding.routineButton.setBackgroundColor(color);
             }
         });
+
+    }
+
+    private String getRoutineLabel() {
+        if (isRoutineStarted && !isRoutineCompleted) {
+            return "End Routine";
+        }
+        else if (isRoutineCompleted){
+            return "Routine Complete";
+        }
+        else{
+            return "Start Routine";
+        }
+    }
+
+    private void toggleRoutine() {
+        if(isRoutineStarted){
+            isRoutineCompleted = true;
+            adapter.disableCheck();
+            binding.routineButton.setText(getRoutineLabel());
+        }
+        else {
+            isRoutineStarted = true;
+            adapter.enableCheck();
+            binding.routineButton.setText(getRoutineLabel());
+        }
+    }
+
+    public boolean isRoutineCompleted() {
+        return isRoutineCompleted;
+    }
+
+    public boolean isRoutineStarted() {
+        return isRoutineStarted;
     }
 }
