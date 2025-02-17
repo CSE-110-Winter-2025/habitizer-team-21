@@ -11,8 +11,7 @@
         android:layout_height="56dp"
         android:layout_marginTop="16dp"
         android:text="@string/card_front_text"
-        android:textSize="48sp"
-        android:textStyle="bold"
+        android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

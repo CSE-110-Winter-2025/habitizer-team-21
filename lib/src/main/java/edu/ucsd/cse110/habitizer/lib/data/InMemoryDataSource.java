@@ -53,6 +53,12 @@ public class InMemoryDataSource {
         return data;
     }
 
+    public static InMemoryDataSource evening() {
+        var data = new InMemoryDataSource();
+        data.putTasks(EVENING_TASKS);
+        return data;
+    }
+
     public List<Task> getTasks() {
         return List.copyOf(tasks.values());
     }

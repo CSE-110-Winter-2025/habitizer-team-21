@@ -12,9 +12,11 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.ArrayList;
 import edu.ucsd.cse110.habitizer.app.R;
 
+import edu.ucsd.cse110.habitizer.app.HabitizerApplication;
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentHomeBinding;
 import edu.ucsd.cse110.habitizer.app.ui.tasklist.CardListFragment;
+
 public class HomeFragment extends Fragment {
     private MainViewModel activityModel; // NEW FIELD
     private FragmentHomeBinding view;
@@ -51,8 +53,14 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupMvp() {
-        view.eveningButton.setOnClickListener(v -> swapFragment());
-        view.morningButton.setOnClickListener(v -> swapFragment());
+        view.eveningButton.setOnClickListener(v -> {
+            activityModel.evening();
+            swapFragment();
+        });
+        view.morningButton.setOnClickListener(v -> {
+            activityModel.morning();
+            swapFragment();
+        });
     }
 
     private void swapFragment() {
