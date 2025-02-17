@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import java.util.ArrayList;
@@ -43,7 +44,9 @@ public class CardListFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         // Initialize the Adapter with an empty list
-        this.adapter = new CardListAdapter(requireContext(), new ArrayList<>());
+        this.adapter = new CardListAdapter(requireContext(), new ArrayList<>(), task-> {
+            activityModel.taskComplete(task);
+        });
 
         // Observe task changes from ViewModel
         activityModel.getOrderedTasks().observe(tasks -> {
@@ -86,6 +89,15 @@ public class CardListFragment extends Fragment {
         }
     }
     private void setupMvp() {
+        activityModel.getTotalRoutineTime().observe(totalMS ->{
+            long totalSeconds = totalMS / 1000;
+            if(requireActivity() instanceof AppCompatActivity){
+                AppCompatActivity appCompatActivity = (AppCompatActivity) requireActivity();
+                if(appCompatActivity.getSupportActionBar() != null){
+                    appCompatActivity.getSupportActionBar().setTitle("Habitizer                  Routine Time: " + totalSeconds + "s");
+                }
+            }
+        });
         activityModel.getRoutineButton().observe(text -> binding.routineButton.setText(text));
 
         binding.routineButton.setOnClickListener(v -> {

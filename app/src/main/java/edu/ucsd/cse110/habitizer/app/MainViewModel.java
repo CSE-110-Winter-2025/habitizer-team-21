@@ -23,6 +23,10 @@ public class MainViewModel extends ViewModel {
     private final Subject<String> routineButtonLabel;
     private final Subject<Boolean> isRoutineCompleted;
 
+    private long routineStartTime;
+    private long lastTaskStartTime;
+    private final Subject<Long> totalRoutineTime;
+
 
 
     public static final ViewModelInitializer<MainViewModel> initializer =
@@ -42,6 +46,8 @@ public class MainViewModel extends ViewModel {
         this.isRoutineCompleted.setValue(false);
         this.isRoutineStarted.setValue(false);
         this.routineButtonLabel = new Subject<>();
+        this.totalRoutineTime = new Subject<>();
+        this.totalRoutineTime.setValue(0L);
         updateRoutineButton();
         this.taskRepository = taskRepository;
         this.orderedTasks = new Subject<>();
@@ -88,18 +94,46 @@ public class MainViewModel extends ViewModel {
         }
     }
 
+    public Subject<Long> getTotalRoutineTime(){
+        return totalRoutineTime;
+    }
+
     // Function to toggle routine state
     public void toggleRoutine() {
         if(Boolean.TRUE.equals(isRoutineStarted.getValue())){
             boolean newState = !Boolean.TRUE.equals(isRoutineCompleted.getValue());
             isRoutineCompleted.setValue(newState);
             updateRoutineButton();
+            if(newState){
+                long endTime = System.currentTimeMillis();
+                long total = endTime - routineStartTime;
+                totalRoutineTime.setValue(total);
+            }
         }
         else {
             boolean newState = !Boolean.TRUE.equals(isRoutineStarted.getValue());
             isRoutineStarted.setValue(newState);
+            routineStartTime = System.currentTimeMillis();
+            lastTaskStartTime = routineStartTime;
             updateRoutineButton();
         }// Update button text
     }
+
+    public void taskComplete(Task task){
+        if (Boolean.TRUE.equals(isRoutineStarted.getValue())
+                && !Boolean.TRUE.equals(isRoutineCompleted.getValue())) {
+
+            long now = System.currentTimeMillis();
+            long timeSpentThisTask = now - lastTaskStartTime;
+            lastTaskStartTime = now;
+
+            task.setTimeSpent(timeSpentThisTask);
+            task.complete();
+            taskRepository.save(task);
+        }
+    }
+
+
+
 
 }

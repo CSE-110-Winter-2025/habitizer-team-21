@@ -17,9 +17,11 @@ import edu.ucsd.cse110.habitizer.app.databinding.ListItemCardBinding;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class CardListAdapter extends ArrayAdapter<Task> {
+    private final Consumer<Task> onTaskClicked;
 
-    public CardListAdapter(Context context, List<Task> tasks) {
+    public CardListAdapter(Context context, List<Task> tasks, Consumer<Task> onTaskClicked) {
         super(context, 0, new ArrayList<>(tasks)); // Ensuring a mutable list
+        this.onTaskClicked = onTaskClicked;
     }
 
     @NonNull
@@ -40,6 +42,16 @@ public class CardListAdapter extends ArrayAdapter<Task> {
         // Set task text
         binding.Task.setText(task.task());
 
+        if(task.getTimeSpent() > 0) {
+            long seconds = task.getTimeSpent() / 1000;
+            binding.timeSpent.setText("Time: " + seconds + "s");
+        } else {
+            binding.timeSpent.setText("");
+        }
+
+        binding.getRoot().setOnClickListener(v -> {
+            onTaskClicked.accept(task);
+        });
         return binding.getRoot();
     }
 
