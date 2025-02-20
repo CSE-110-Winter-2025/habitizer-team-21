@@ -23,6 +23,10 @@ public class CardListFragment extends Fragment {
     private boolean isRoutineStarted;
     private boolean isRoutineCompleted;
 
+    //time variables
+    private long routineStartTime;
+    private long lastTaskStartTime;
+
     public CardListFragment() {
         // Required empty public constructor
     }
@@ -95,9 +99,11 @@ public class CardListFragment extends Fragment {
         var isEvening = activityModel.isEvening();
         if(isEvening){
             binding.routineTitle.setText("Evening Routine");
+            binding.totalTime.setVisibility(View.GONE);
         }
         else{
             binding.routineTitle.setText("Morning Routine");
+            binding.totalTime.setVisibility(View.GONE);
         }
 
         binding.routineButton.setOnClickListener(v -> {
@@ -133,11 +139,18 @@ public class CardListFragment extends Fragment {
             isRoutineCompleted = true;
             adapter.disableCheck();
             binding.routineButton.setText(getRoutineLabel());
+            long total = adapter.getTotal();
+            binding.totalTime.setText("Total: " + total + "m");
+            binding.totalTime.setVisibility(View.VISIBLE);
         }
         else {
             isRoutineStarted = true;
             adapter.enableCheck();
             binding.routineButton.setText(getRoutineLabel());
+            //track the routine start time
+            routineStartTime = System.currentTimeMillis();
+            lastTaskStartTime = routineStartTime;
+            adapter.setRoutineStartTime(routineStartTime);
         }
     }
 
@@ -147,5 +160,15 @@ public class CardListFragment extends Fragment {
 
     public boolean isRoutineStarted() {
         return isRoutineStarted;
+    }
+
+    public long getRoutineStartTime(){
+        return routineStartTime;
+    }
+    public long getLastTaskStartTime(){
+        return lastTaskStartTime;
+    }
+    public void setLastTaskStartTime(long startTime){
+        this.lastTaskStartTime = startTime;
     }
 }

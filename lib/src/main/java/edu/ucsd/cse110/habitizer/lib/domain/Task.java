@@ -13,11 +13,16 @@ public class Task implements Serializable{
     private boolean completed;
     private Integer sortOrder;
 
+    private long timeSpent;
+
+    private long timeDisplayed;
+
     public Task(@Nullable Integer id, @NonNull String task, int sortOrder){
         this.completed = false;
         this.id = id;
         this.task = task;
         this.sortOrder = sortOrder;
+        this.timeSpent = 0L;
     }
 
     public @Nullable Integer id(){return id;}
@@ -52,5 +57,16 @@ public class Task implements Serializable{
     public void complete(){
         this.completed = true;
     }
+    public long getTimeSpent() {
+        return this.timeSpent;
+    }
+
+    public void setTimeSpent(long timeSpent){
+        this.timeSpent = timeSpent;
+    }
+
+    public long getDisplayedTime(){ return this.timeDisplayed;}
+
+    public void setDisplayedTime(long timeDisplayed){this.timeDisplayed = timeDisplayed;}
 
 }
