@@ -20,8 +20,13 @@ public class CardListFragment extends Fragment {
     private MainViewModel activityModel;
     private FragmentCardListBinding binding;
     private CardListAdapter adapter;
-    private boolean isRoutineStarted;
-    private boolean isRoutineCompleted;
+    /**
+     * ROUTINE:
+     *
+     * private boolean isRoutineStarted;
+     * private boolean isRoutineCompleted;
+     * removing these fields because we can access them through activityModel
+     */
 
     //time variables
     private long routineStartTime;
@@ -57,9 +62,12 @@ public class CardListFragment extends Fragment {
             adapter.addAll(new ArrayList<>(tasks)); // Ensure mutable copy
             adapter.notifyDataSetChanged();
         });
-
-        this.isRoutineCompleted = false;
-        this.isRoutineStarted = false;
+        /**
+         * ROUTINE:
+         * Removing these
+         * this.isRoutineCompleted = activityModel.isRoutineCompleted();
+         * this.isRoutineStarted = activityModel.isRoutineStarted();
+         */
     }
 
     @Nullable
@@ -122,11 +130,15 @@ public class CardListFragment extends Fragment {
 
     }
 
+    /**
+     * ROUTINE
+     * Changed function to use activityModel for routine info
+     */
     private String getRoutineLabel() {
-        if (isRoutineStarted && !isRoutineCompleted) {
+        if (activityModel.isRoutineStarted() && !activityModel.isRoutineCompleted()) {
             return "End Routine";
         }
-        else if (isRoutineCompleted){
+        else if (activityModel.isRoutineCompleted()){
             return "Routine Complete";
         }
         else{
@@ -134,9 +146,13 @@ public class CardListFragment extends Fragment {
         }
     }
 
+    /**
+     * ROUTINE:
+     * Changed function to access Routine information through activityModel
+     */
     private void toggleRoutine() {
-        if(isRoutineStarted){
-            isRoutineCompleted = true;
+        if(activityModel.isRoutineStarted()){
+            activityModel.completeRoutine();
             adapter.disableCheck();
             binding.routineButton.setText(getRoutineLabel());
             long total = adapter.getTotal();
@@ -144,7 +160,7 @@ public class CardListFragment extends Fragment {
             binding.totalTime.setVisibility(View.VISIBLE);
         }
         else {
-            isRoutineStarted = true;
+            activityModel.startRoutine();
             adapter.enableCheck();
             binding.routineButton.setText(getRoutineLabel());
             //track the routine start time
@@ -154,13 +170,6 @@ public class CardListFragment extends Fragment {
         }
     }
 
-    public boolean isRoutineCompleted() {
-        return isRoutineCompleted;
-    }
-
-    public boolean isRoutineStarted() {
-        return isRoutineStarted;
-    }
 
     public long getRoutineStartTime(){
         return routineStartTime;

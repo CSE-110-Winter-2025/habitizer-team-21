@@ -25,6 +25,7 @@ public class InMemoryDataSource {
             = new HashMap<>();
     private final Subject<List<Task>> allTasksSubject
             = new Subject<>();
+    private Subject<Boolean> isMorning;
 
     public InMemoryDataSource() {
     }
