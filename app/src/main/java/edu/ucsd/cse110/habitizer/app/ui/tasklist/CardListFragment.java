@@ -8,12 +8,16 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentCardListBinding;
 import edu.ucsd.cse110.habitizer.app.ui.tasklist.dialog.CreateTaskFragment;
+import edu.ucsd.cse110.habitizer.app.ui.tasklist.dialog.EditTaskFragment;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class CardListFragment extends Fragment {
@@ -48,7 +52,13 @@ public class CardListFragment extends Fragment {
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
         // Initialize the Adapter with an empty list
-        this.adapter = new CardListAdapter(requireContext(), new ArrayList<>());
+        this.adapter = new CardListAdapter(
+                requireContext(),
+                new ArrayList<>(),
+                task -> activityModel.remove(task),
+                task -> onEditTask(task)
+                );
+
 
         // Observe task changes from ViewModel
         activityModel.getOrderedTasks().observe(tasks -> {
@@ -60,6 +70,33 @@ public class CardListFragment extends Fragment {
 
         this.isRoutineCompleted = false;
         this.isRoutineStarted = false;
+    }
+    public void onEditTask(Task task){ // edit button functionality
+        if (task.id()==null) return;
+
+        EditTaskFragment dialog = new EditTaskFragment(task.task(), task.id(), new EditTaskFragment.TaskEditListener() {
+            @Override
+            public void onRename(String newName) { //rename functionality
+                if (task.id() != null){
+                    task.renameTask(newName);
+                    activityModel.save(task);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onDelete() { //delete functionality
+                if (task.id()!=null){
+                    task.deleteTask();
+                    activityModel.remove(task);
+                    adapter.notifyDataSetChanged();
+                }
+
+            }
+        });
+        if (requireContext() instanceof FragmentActivity){
+            dialog.show(((FragmentActivity)requireContext()).getSupportFragmentManager(), "EditTaskDialog");
+        }
     }
 
     @Nullable

@@ -9,8 +9,9 @@ import java.util.Objects;
 
 public class Task implements Serializable{
     private final @Nullable Integer id;
-    private final @NonNull String task;
+    private @NonNull String task;
     private boolean completed;
+    private boolean deleted;
     private Integer sortOrder;
 
     private long timeSpent;
@@ -19,13 +20,14 @@ public class Task implements Serializable{
 
     public Task(@Nullable Integer id, @NonNull String task, int sortOrder){
         this.completed = false;
+        this.deleted = false;
         this.id = id;
         this.task = task;
         this.sortOrder = sortOrder;
         this.timeSpent = 0L;
     }
 
-    public @Nullable Integer id(){return id;}
+    public @Nullable java.lang.Integer id(){return id;}
 
     public @NonNull String task(){return task;}
 
@@ -69,4 +71,10 @@ public class Task implements Serializable{
 
     public void setDisplayedTime(long timeDisplayed){this.timeDisplayed = timeDisplayed;}
 
+    public void renameTask(@NonNull String newName){this.task = newName;}
+
+    public boolean isDeleted() {return deleted;}
+    public void deleteTask(){
+        this.deleted = true;
+    }
 }
