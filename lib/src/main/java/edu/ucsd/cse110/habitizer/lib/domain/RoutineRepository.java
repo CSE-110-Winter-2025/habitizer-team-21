@@ -34,12 +34,12 @@ public class RoutineRepository {
 
     public void append(Routine routine){
         dataSource.putRoutine(
-                routine.withSortOrder(dataSource.getMaxSortOrder() + 1)
+                routine.withSortOrder(dataSource.getMaxSortOrderRoutine() + 1)
         );
     }
 
     public void prepend(Routine routine){
-        dataSource.shiftSortOrders(0, dataSource.getMaxSortOrder(),1);
+        dataSource.shiftSortOrders(0, dataSource.getMaxSortOrderRoutine(),1);
         dataSource.putRoutine(
                 routine.withSortOrder(dataSource.getMinSortOrder()-1)
         );

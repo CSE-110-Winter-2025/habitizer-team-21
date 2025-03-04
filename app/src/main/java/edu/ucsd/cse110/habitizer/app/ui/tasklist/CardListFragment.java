@@ -39,7 +39,7 @@ public class CardListFragment extends Fragment {
     }
 
     public static CardListFragment newInstance() {
-        CardListFragment fragment = new CardListFragment(new Routine(0,"New Routine",0));
+        CardListFragment fragment = new CardListFragment(new Routine(null,"New Routine",-1));
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;

@@ -19,8 +19,10 @@ import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentRoutineListBinding;
 import edu.ucsd.cse110.habitizer.app.ui.routinelist.RoutineListAdapter;
 import edu.ucsd.cse110.habitizer.app.ui.tasklist.CardListFragment;
+import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 
 public class RoutineListFragment extends Fragment {
+    private int nextId = 3;
     private MainViewModel activityModel;
     private FragmentRoutineListBinding binding;
     private RoutineListAdapter adapter;
@@ -48,7 +50,7 @@ public class RoutineListFragment extends Fragment {
         // Initialize the Adapter with an empty list
         this.adapter = new RoutineListAdapter(requireContext(), new ArrayList<>(),routine -> {
             // Handle the click event
-            Toast.makeText(getContext(), "Clicked: " + routine.name(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Clicked: " + routine.name() + " - Routine ID: " + routine.id(), Toast.LENGTH_SHORT).show();
 
             // Example: Replace fragment on click
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
@@ -77,17 +79,17 @@ public class RoutineListFragment extends Fragment {
 
 
         binding.routineList.setAdapter(adapter);
-        /*binding.getRoot().setOnClickListener(v ->{
-            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, new CardListFragment()); // Replace with your new fragment
-            transaction.addToBackStack(null); // Allow back navigation
-            transaction.commit();
-        });*/
+
 
         // Open dialog to add new tasks
         binding.floatingActionButton.setOnClickListener(v -> {
-            /*var dialogFragment = CreateRoutineFragment.newInstance();
-            dialogFragment.show(getParentFragmentManager(), "CreateRoutineDialogFragment");*/
+            var newRoutine = new Routine(nextId, "New Routine",-1);
+            nextId++;
+            activityModel.addRoutine(newRoutine);
+            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, new CardListFragment(newRoutine));
+            transaction.addToBackStack(null);
+            transaction.commit();
         });
 
         setupMvp();

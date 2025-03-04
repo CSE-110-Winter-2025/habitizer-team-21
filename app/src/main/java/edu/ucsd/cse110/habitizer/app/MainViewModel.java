@@ -102,6 +102,10 @@ public class MainViewModel extends ViewModel {
         taskRepository.prepend(task);
     }
 
+    public void addRoutine(Routine routine){
+        routineRepository.append(routine);
+    }
+
     public void toggleTaskStrikeThrough(int position) {
         if (strikethroughItems.contains(position)) {
             strikethroughItems.remove(position);

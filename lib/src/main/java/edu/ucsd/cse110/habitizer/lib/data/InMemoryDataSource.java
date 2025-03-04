@@ -19,6 +19,8 @@ public class InMemoryDataSource {
 
     private int minSortOrder = Integer.MAX_VALUE;
     private int maxSortOrder = Integer.MIN_VALUE;
+    private int minSortOrderRoutine = Integer.MAX_VALUE;
+    private int maxSortOrderRoutine = Integer.MIN_VALUE;
 
     private final Map<Integer, Task> tasks
             = new HashMap<>();
@@ -109,6 +111,8 @@ public class InMemoryDataSource {
     public int getMaxSortOrder() {
         return maxSortOrder;
     }
+    public int getMinSortOrderRoutine(){ return minSortOrderRoutine;}
+    public int getMaxSortOrderRoutine(){ return maxSortOrderRoutine;}
 
     public void putTask(Task task) {
         var fixedTask = preInsert(task);
@@ -157,7 +161,7 @@ public class InMemoryDataSource {
                 .collect(Collectors.toList());
 
         fixedRoutines.forEach(routine -> routines.put(routine.id(), routine));
-        postInsert();
+        postInsertRoutine();
         assertSortOrderConstraints();
 
         fixedRoutines.forEach(routine -> {
@@ -261,12 +265,12 @@ public class InMemoryDataSource {
     }
     private void postInsertRoutine() {
         // Keep the min and max sort orders up to date.
-        minSortOrder = routines.values().stream()
+        minSortOrderRoutine = routines.values().stream()
                 .map(Routine::sortOrder)
                 .min(Integer::compareTo)
                 .orElse(Integer.MAX_VALUE);
 
-        maxSortOrder = routines.values().stream()
+        maxSortOrderRoutine = routines.values().stream()
                 .map(Routine::sortOrder)
                 .max(Integer::compareTo)
                 .orElse(Integer.MIN_VALUE);
