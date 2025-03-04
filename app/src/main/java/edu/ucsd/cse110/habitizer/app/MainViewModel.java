@@ -114,7 +114,6 @@ public class MainViewModel extends ViewModel {
     }
 
     public void loadTasksFromRoutine(int id){
-        taskRepository = new TaskRepository(InMemoryDataSource.fromDefault());
         taskRepository.findAll().observe(cards -> {
             if (cards == null) return; // not ready yet, ignore
             var newOrderedCards = cards.stream()

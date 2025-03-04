@@ -13,19 +13,22 @@ import androidx.lifecycle.ViewModelProvider;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentDialogCreateTaskBinding;
+import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 
 public class CreateTaskFragment extends DialogFragment {
     private MainViewModel activityModel;
     private FragmentDialogCreateTaskBinding binding;
+    private Routine routine;
 
-    public CreateTaskFragment() {
+    public CreateTaskFragment(Routine routine) {
+        this.routine = routine;
         // Required empty public constructor
     }
 
-    public static CreateTaskFragment newInstance() {
-        return new CreateTaskFragment();
+    public static CreateTaskFragment newInstance(Routine routine) {
+        return new CreateTaskFragment(routine);
     }
 
     @NonNull
@@ -45,7 +48,7 @@ public class CreateTaskFragment extends DialogFragment {
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var taskName = binding.taskName.getText().toString();
 
-        var task = new Task(null, taskName, -1,activityModel.getRoutineID());
+        var task = new Task(null, taskName, -1,routine.id());
         if (taskName.trim().isEmpty()) {
             dialog.dismiss();
             return;

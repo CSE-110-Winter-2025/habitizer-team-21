@@ -88,7 +88,7 @@ public class CardListFragment extends Fragment {
 
         // Open dialog to add new tasks
         binding.floatingActionButton.setOnClickListener(v -> {
-            var dialogFragment = CreateTaskFragment.newInstance();
+            var dialogFragment = CreateTaskFragment.newInstance(routine);
             dialogFragment.show(getParentFragmentManager(), "CreateCardDialogFragment");
         });
 
