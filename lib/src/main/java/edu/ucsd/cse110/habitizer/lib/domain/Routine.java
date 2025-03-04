@@ -9,7 +9,6 @@ public class Routine implements Serializable {
     private final @Nullable Integer id;
     private boolean isStarted;
     private boolean completed;
-    private boolean isMorning;
     private Integer sortOrder;
     public Routine(@Nullable Integer id, String name, int sortOrder){
         this.sortOrder = sortOrder;
@@ -27,12 +26,7 @@ public class Routine implements Serializable {
     public int sortOrder() {
         return sortOrder;
     }
-    public boolean isMorning(){
-        return isMorning;
-    }
-    public boolean isEvening(){
-        return !isMorning;
-    }
+
     public void complete(){
         this.completed = true;
     }
@@ -42,17 +36,11 @@ public class Routine implements Serializable {
     }
     public @Nullable Integer id(){return id;}
     public String name(){ return name; }
-    public void morning(){
-        this.isMorning = true;
+    public void reset(){
         this.isStarted = false;
         this.completed = false;
     }
 
-    public void evening(){
-        this.isMorning = false;
-        this.isStarted = false;
-        this.completed = false;
-    }
     public Routine withSortOrder(int sortOrder) {
         return new Routine(this.id, this.name, sortOrder);
     }

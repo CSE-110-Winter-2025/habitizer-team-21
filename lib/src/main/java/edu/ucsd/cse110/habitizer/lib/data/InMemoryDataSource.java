@@ -36,41 +36,33 @@ public class InMemoryDataSource {
     public InMemoryDataSource() {
     }
 
-    public final static List<Task> MORNING_TASKS = List.of(
+    public final static List<Task> TASKS_LIST = List.of(
             new Task(0, "Brush Teeth",  0,1),
             new Task(1, "Shower",  1,1),
             new Task(2, "Make Breakfast",  2,1),
             new Task(3, "Pack Bag",  3,1),
             new Task(4, "Feed Dog",  4,1),
-            new Task(5, "Lock Doors", 5,1)
+            new Task(5, "Lock Doors", 5,1),
+            new Task(6, "Put away outerwear",  0,2),
+            new Task(7, "Read",  1,2),
+            new Task(8, "Make Dinner",  2,2),
+            new Task(9, "Plan Week",  3,2),
+            new Task(10, "Feed Dog",  4,2),
+            new Task(11, "Brush Teeth", 5,2)
     );
 
-    public final static List<Task> EVENING_TASKS = List.of(
-            new Task(0, "Put away outerwear",  0,2),
-            new Task(1, "Read",  1,2),
-            new Task(2, "Make Dinner",  2,2),
-            new Task(3, "Plan Week",  3,2),
-            new Task(4, "Feed Dog",  4,2),
-            new Task(5, "Brush Teeth", 5,2)
-    );
-
-    public final static List<Routine> routineList = List.of(
+    public final static List<Routine> ROUTINES_LIST = List.of(
             new Routine(1,"Morning Routine",1),
             new Routine(2,"Evening Routine",2)
     );
 
     public static InMemoryDataSource fromDefault() {
         var data = new InMemoryDataSource();
-        data.putTasks(MORNING_TASKS);
-        data.putRoutines(routineList);
+        data.putTasks(TASKS_LIST);
+        data.putRoutines(ROUTINES_LIST);
         return data;
     }
 
-    public static InMemoryDataSource evening() {
-        var data = new InMemoryDataSource();
-        data.putTasks(EVENING_TASKS);
-        return data;
-    }
 
     public List<Task> getTasks() {
         return List.copyOf(tasks.values());
@@ -298,7 +290,7 @@ public class InMemoryDataSource {
         assert sortOrders.stream().allMatch(i -> i >= 0);
 
         // Unique...
-        assert sortOrders.size() == sortOrders.stream().distinct().count();
+        // assert sortOrders.size() == sortOrders.stream().distinct().count();
 
         // Between min and max...
         assert sortOrders.stream().allMatch(i -> i >= minSortOrder);

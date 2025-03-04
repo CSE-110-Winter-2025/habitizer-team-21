@@ -9,11 +9,10 @@ import edu.ucsd.cse110.habitizer.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 
 public class HabitizerApplication extends Application {
-    private boolean isEvening;
     private InMemoryDataSource dataSource;
     private TaskRepository taskRepository;
     private RoutineRepository routineRepository;
-    private Routine routine;
+
 
     @Override
     public void onCreate() {
@@ -23,7 +22,6 @@ public class HabitizerApplication extends Application {
         this.taskRepository = new TaskRepository(dataSource);
         this.routineRepository = new RoutineRepository(dataSource);
 
-        this.routine = new Routine(0,"PLACEHOLDER",0);
     }
 
     public TaskRepository getTaskRepository() {
@@ -31,5 +29,5 @@ public class HabitizerApplication extends Application {
     }
 
     public RoutineRepository getRoutineRepository(){ return routineRepository;}
-    public Routine getRoutine() {return routine;}
+
 }

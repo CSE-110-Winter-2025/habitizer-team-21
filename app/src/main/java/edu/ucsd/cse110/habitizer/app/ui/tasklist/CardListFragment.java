@@ -57,6 +57,7 @@ public class CardListFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
         // Initialize the Adapter with an empty list
         this.adapter = new CardListAdapter(requireContext(), new ArrayList<>());
+        activityModel.loadTasksFromRoutine(routine.id());
 
         // Observe task changes from ViewModel
         activityModel.getOrderedTasks().observe(tasks -> {
@@ -131,10 +132,10 @@ public class CardListFragment extends Fragment {
      * Changed function to use activityModel for routine info
      */
     private String getRoutineLabel() {
-        if (activityModel.isRoutineStarted() && !activityModel.isRoutineCompleted()) {
+        if (routine.isStarted() && !routine.isCompleted()) {
             return "End Routine";
         }
-        else if (activityModel.isRoutineCompleted()){
+        else if (routine.isCompleted()){
             return "Routine Complete";
         }
         else{
@@ -147,8 +148,8 @@ public class CardListFragment extends Fragment {
      * Changed function to access Routine information through activityModel
      */
     private void toggleRoutine() {
-        if(activityModel.isRoutineStarted()){
-            activityModel.completeRoutine();
+        if(routine.isStarted()){
+            routine.complete();
             adapter.disableCheck();
             binding.routineButton.setText(getRoutineLabel());
             long total = adapter.getTotal();
@@ -156,7 +157,7 @@ public class CardListFragment extends Fragment {
             binding.totalTime.setVisibility(View.VISIBLE);
         }
         else {
-            activityModel.startRoutine();
+            routine.start();
             adapter.enableCheck();
             binding.routineButton.setText(getRoutineLabel());
             //track the routine start time

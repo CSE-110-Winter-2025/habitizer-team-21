@@ -35,7 +35,6 @@ public class MainViewModel extends ViewModel {
     private final Subject<List<Task>> orderedTasks;
     private final Subject<List<Routine>> orderedRoutines;
     private TaskRepository taskRepository;
-    private int currentRoutineId;
     private RoutineRepository routineRepository;
     /**
      * ROUTINE:
@@ -56,7 +55,7 @@ public class MainViewModel extends ViewModel {
                     creationExtras -> {
                         var app = (HabitizerApplication) creationExtras.get(APPLICATION_KEY);
                         assert app != null;
-                        return new MainViewModel(app.getTaskRepository(), app.getRoutine(), app.getRoutineRepository());
+                        return new MainViewModel(app.getTaskRepository(), app.getRoutineRepository());
                     });
 
 
@@ -67,10 +66,9 @@ public class MainViewModel extends ViewModel {
      * @param taskRepository from the app
      * @param routine from the app
      */
-    public MainViewModel(TaskRepository taskRepository, Routine routine, RoutineRepository routineRepository) {
+    public MainViewModel(TaskRepository taskRepository, RoutineRepository routineRepository) {
         this.taskRepository = taskRepository;
         this.routineRepository = routineRepository;
-        this.routine = routine;
         this.orderedTasks = new Subject<>();
         this.orderedTasks.setValue(new ArrayList<>()); // Initialize with an empty list
         this.orderedRoutines = new Subject<>();
@@ -124,40 +122,16 @@ public class MainViewModel extends ViewModel {
     public boolean isTaskStruckThrough(int position) {
         return strikethroughItems.contains(position);
     }
-    public void setRoutineId(int id){
-        this.currentRoutineId = id;
-    }
 
-    /**
-     * ROUTINE:
-     * Function now calls the Routine class's evening method
-     */
-    public void evening(){
-        routine.evening();
-        taskRepository = new TaskRepository(InMemoryDataSource.evening());
-        taskRepository.findAll().observe(cards -> {
-            if (cards == null) return; // not ready yet, ignore
-
-            var newOrderedCards = cards.stream()
-                    .sorted(Comparator.comparingInt(Task::sortOrder))
-                    .collect(Collectors.toList());
-
-            orderedTasks.setValue(newOrderedCards);
-        });
-
-    }
-
-    /**
-     * ROUTINE:
-     * Function now calls the Routine class's morning method
-     */
-    public void morning(){
-        routine.morning();
+    public void loadTasksFromRoutine(int id){
         taskRepository = new TaskRepository(InMemoryDataSource.fromDefault());
         taskRepository.findAll().observe(cards -> {
             if (cards == null) return; // not ready yet, ignore
-
+            for (Task card : cards) {
+                System.out.println("Task: " + card.task() + ", RoutineID: " + card.getRoutineId());
+            }
             var newOrderedCards = cards.stream()
+                    .filter(card -> card.getRoutineId() == id)
                     .sorted(Comparator.comparingInt(Task::sortOrder))
                     .collect(Collectors.toList());
 
@@ -166,26 +140,7 @@ public class MainViewModel extends ViewModel {
 
     }
 
-    /**
-     * ROUTINE:
-     * Function changed to use routine's isEvening method
-     * @return boolean value indicating if it's evening
-     */
-    public boolean isEvening(){
-        return routine.isEvening();
-    }
-    public boolean isRoutineStarted(){
-        return routine.isStarted();
-    }
-    public boolean isRoutineCompleted(){
-        return routine.isCompleted();
-    }
-    public void completeRoutine(){
-        routine.complete();
-    }
-    public void startRoutine(){
-        routine.start();
-    }
+
 
     public int getRoutineID(){
         return 0;
