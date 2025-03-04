@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import edu.ucsd.cse110.habitizer.app.databinding.ActivityMainBinding;
-import edu.ucsd.cse110.habitizer.app.ui.tasklist.CardListFragment;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -23,10 +22,5 @@ public class MainActivity extends AppCompatActivity {
         setContentView(view.getRoot());
     }
 
-    private void openRoutine(){
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, CardListFragment.newInstance())
-                .commit();
-    }
+
 }

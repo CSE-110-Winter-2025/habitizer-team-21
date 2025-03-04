@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
@@ -25,32 +26,43 @@ public class InMemoryDataSource {
             = new HashMap<>();
     private final Subject<List<Task>> allTasksSubject
             = new Subject<>();
-    private Subject<Boolean> isMorning;
+    private final Map<Integer, Routine> routines
+            = new HashMap<>();
+    private final Map<Integer, Subject<Routine>> routineSubjects
+            = new HashMap<>();
+    private final Subject<List<Routine>> allRoutinesSubject
+            = new Subject<>();
 
     public InMemoryDataSource() {
     }
 
     public final static List<Task> MORNING_TASKS = List.of(
-            new Task(0, "Brush Teeth",  0),
-            new Task(1, "Shower",  1),
-            new Task(2, "Make Breakfast",  2),
-            new Task(3, "Pack Bag",  3),
-            new Task(4, "Feed Dog",  4),
-            new Task(5, "Lock Doors", 5)
+            new Task(0, "Brush Teeth",  0,1),
+            new Task(1, "Shower",  1,1),
+            new Task(2, "Make Breakfast",  2,1),
+            new Task(3, "Pack Bag",  3,1),
+            new Task(4, "Feed Dog",  4,1),
+            new Task(5, "Lock Doors", 5,1)
     );
 
     public final static List<Task> EVENING_TASKS = List.of(
-            new Task(0, "Put away outerwear",  0),
-            new Task(1, "Read",  1),
-            new Task(2, "Make Dinner",  2),
-            new Task(3, "Plan Week",  3),
-            new Task(4, "Feed Dog",  4),
-            new Task(5, "Brush Teeth", 5)
+            new Task(0, "Put away outerwear",  0,2),
+            new Task(1, "Read",  1,2),
+            new Task(2, "Make Dinner",  2,2),
+            new Task(3, "Plan Week",  3,2),
+            new Task(4, "Feed Dog",  4,2),
+            new Task(5, "Brush Teeth", 5,2)
+    );
+
+    public final static List<Routine> routineList = List.of(
+            new Routine(1,"Morning Routine",1),
+            new Routine(2,"Evening Routine",2)
     );
 
     public static InMemoryDataSource fromDefault() {
         var data = new InMemoryDataSource();
         data.putTasks(MORNING_TASKS);
+        data.putRoutines(routineList);
         return data;
     }
 
@@ -63,9 +75,15 @@ public class InMemoryDataSource {
     public List<Task> getTasks() {
         return List.copyOf(tasks.values());
     }
+    public List<Routine> getRoutines() {
+        return List.copyOf(routines.values());
+    }
 
     public Task getTask(int id) {
         return tasks.get(id);
+    }
+    public Routine getRoutine(int id) {
+        return routines.get(id);
     }
 
     public Subject<Task> getTaskSubject(int id) {
@@ -76,9 +94,20 @@ public class InMemoryDataSource {
         }
         return taskSubjects.get(id);
     }
+    public Subject<Routine> getRoutineSubject(int id) {
+        if (!routineSubjects.containsKey(id)) {
+            var subject = new Subject<Routine>();
+            subject.setValue(getRoutine(id));
+            routineSubjects.put(id, subject);
+        }
+        return routineSubjects.get(id);
+    }
 
     public Subject<List<Task>> getAllTasksSubject() {
         return allTasksSubject;
+    }
+    public Subject<List<Routine>> getAllRoutinesSubject() {
+        return allRoutinesSubject;
     }
 
     public int getMinSortOrder() {
@@ -101,6 +130,18 @@ public class InMemoryDataSource {
         }
         allTasksSubject.setValue(getTasks());
     }
+    public void putRoutine(Routine routine) {
+        var fixedRoutine = preInsertRoutine(routine);
+
+        routines.put(fixedRoutine.id(), fixedRoutine);
+        postInsert();
+        assertSortOrderConstraints();
+
+        if (routineSubjects.containsKey(fixedRoutine.id())) {
+            routineSubjects.get(fixedRoutine.id()).setValue(fixedRoutine);
+        }
+        allRoutinesSubject.setValue(getRoutines());
+    }
 
     public void putTasks(List<Task> tasks_l) {
         var fixedTasks = tasks_l.stream()
@@ -118,6 +159,22 @@ public class InMemoryDataSource {
         });
         allTasksSubject.setValue(getTasks());
     }
+    public void putRoutines(List<Routine> rList) {
+        var fixedRoutines = rList.stream()
+                .map(this::preInsertRoutine)
+                .collect(Collectors.toList());
+
+        fixedRoutines.forEach(routine -> routines.put(routine.id(), routine));
+        postInsert();
+        assertSortOrderConstraints();
+
+        fixedRoutines.forEach(routine -> {
+            if (routineSubjects.containsKey(routine.id())) {
+                routineSubjects.get(routine.id()).setValue(routine);
+            }
+        });
+        allRoutinesSubject.setValue(getRoutines());
+    }
 
     public void removeTask(int id) {
         var task = tasks.get(id);
@@ -131,6 +188,18 @@ public class InMemoryDataSource {
         }
         allTasksSubject.setValue(getTasks());
     }
+    public void removeRoutine(int id) {
+        var routine = routines.get(id);
+        var sortOrder = routine.sortOrder();
+
+        routines.remove(id);
+        shiftSortOrdersRoutine(sortOrder, maxSortOrder, -1);
+
+        if (routineSubjects.containsKey(id)) {
+            routineSubjects.get(id).setValue(null);
+        }
+        allRoutinesSubject.setValue(getRoutines());
+    }
 
     public void shiftSortOrders(int from, int to, int by) {
         var tasks_l = tasks.values().stream()
@@ -139,6 +208,14 @@ public class InMemoryDataSource {
                 .collect(Collectors.toList());
 
         putTasks(tasks_l);
+    }
+    public void shiftSortOrdersRoutine(int from, int to, int by) {
+        var rList = routines.values().stream()
+                .filter(routine -> routine.sortOrder() >= from && routine.sortOrder() <= to)
+                .map(routine -> routine.withSortOrder(routine.sortOrder() + by))
+                .collect(Collectors.toList());
+
+        putRoutines(rList);
     }
 
     /**
@@ -159,6 +236,20 @@ public class InMemoryDataSource {
 
         return task;
     }
+    private Routine preInsertRoutine(Routine routine) {
+        var id = routine.id();
+        if (id == null) {
+            // If the task has no id, give it one.
+            routine = routine.withId(nextId++);
+        }
+        else if (id > nextId) {
+            // If the task has an id, update nextId if necessary to avoid giving out the same
+            // one. This is important for when we pre-load tasks like in fromDefault().
+            nextId = id + 1;
+        }
+
+        return routine;
+    }
 
     /**
      * Private utility method to maintain state of the fake DB: ensures that the
@@ -176,6 +267,19 @@ public class InMemoryDataSource {
                 .max(Integer::compareTo)
                 .orElse(Integer.MIN_VALUE);
     }
+    private void postInsertRoutine() {
+        // Keep the min and max sort orders up to date.
+        minSortOrder = routines.values().stream()
+                .map(Routine::sortOrder)
+                .min(Integer::compareTo)
+                .orElse(Integer.MAX_VALUE);
+
+        maxSortOrder = routines.values().stream()
+                .map(Routine::sortOrder)
+                .max(Integer::compareTo)
+                .orElse(Integer.MIN_VALUE);
+    }
+
 
     /**
      * Safety checks to ensure the sort order constraints are maintained.

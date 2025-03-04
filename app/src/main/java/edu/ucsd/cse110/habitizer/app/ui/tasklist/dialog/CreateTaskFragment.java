@@ -45,7 +45,7 @@ public class CreateTaskFragment extends DialogFragment {
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var taskName = binding.taskName.getText().toString();
 
-        var task = new Task(null, taskName, -1);
+        var task = new Task(null, taskName, -1,activityModel.getRoutineID());
         if (taskName.trim().isEmpty()) {
             dialog.dismiss();
             return;

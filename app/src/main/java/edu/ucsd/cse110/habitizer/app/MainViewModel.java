@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.habitizer.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
+import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.TaskRepository;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
@@ -32,7 +33,10 @@ import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 public class MainViewModel extends ViewModel {
     private final Subject<List<Task>> orderedTasks;
+    private final Subject<List<Routine>> orderedRoutines;
     private TaskRepository taskRepository;
+    private int currentRoutineId;
+    private RoutineRepository routineRepository;
     /**
      * ROUTINE:
      * Added Routine field
@@ -52,7 +56,7 @@ public class MainViewModel extends ViewModel {
                     creationExtras -> {
                         var app = (HabitizerApplication) creationExtras.get(APPLICATION_KEY);
                         assert app != null;
-                        return new MainViewModel(app.getTaskRepository(), app.getRoutine());
+                        return new MainViewModel(app.getTaskRepository(), app.getRoutine(), app.getRoutineRepository());
                     });
 
 
@@ -63,11 +67,14 @@ public class MainViewModel extends ViewModel {
      * @param taskRepository from the app
      * @param routine from the app
      */
-    public MainViewModel(TaskRepository taskRepository, Routine routine) {
+    public MainViewModel(TaskRepository taskRepository, Routine routine, RoutineRepository routineRepository) {
         this.taskRepository = taskRepository;
+        this.routineRepository = routineRepository;
         this.routine = routine;
         this.orderedTasks = new Subject<>();
         this.orderedTasks.setValue(new ArrayList<>()); // Initialize with an empty list
+        this.orderedRoutines = new Subject<>();
+        this.orderedRoutines.setValue(new ArrayList<>());
         this.strikethroughItems = new HashSet<>();
 
         taskRepository.findAll().observe(cards -> {
@@ -80,10 +87,23 @@ public class MainViewModel extends ViewModel {
             orderedTasks.setValue(newOrderedCards);
         });
 
+        routineRepository.findAll().observe(routines -> {
+            if (routines == null) return;
+
+            var newOrderedRoutines = routines.stream()
+                    .sorted(Comparator.comparingInt(Routine::sortOrder))
+                    .collect(Collectors.toList());
+
+            orderedRoutines.setValue(newOrderedRoutines);
+        });
+
     }
 
     public Subject<List<Task>> getOrderedTasks() {
         return orderedTasks;
+    }
+    public Subject<List<Routine>> getOrderedRoutines() {
+        return orderedRoutines;
     }
 
     public void append(Task task) {
@@ -103,6 +123,9 @@ public class MainViewModel extends ViewModel {
     }
     public boolean isTaskStruckThrough(int position) {
         return strikethroughItems.contains(position);
+    }
+    public void setRoutineId(int id){
+        this.currentRoutineId = id;
     }
 
     /**
@@ -162,6 +185,10 @@ public class MainViewModel extends ViewModel {
     }
     public void startRoutine(){
         routine.start();
+    }
+
+    public int getRoutineID(){
+        return 0;
     }
 
 }
