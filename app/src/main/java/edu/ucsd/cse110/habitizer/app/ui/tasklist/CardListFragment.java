@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentCardListBinding;
 import edu.ucsd.cse110.habitizer.app.ui.tasklist.dialog.CreateTaskFragment;
+import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class CardListFragment extends Fragment {
@@ -31,13 +32,15 @@ public class CardListFragment extends Fragment {
     //time variables
     private long routineStartTime;
     private long lastTaskStartTime;
+    private Routine routine;
 
-    public CardListFragment() {
+    public CardListFragment(Routine routine) {
         // Required empty public constructor
+        this.routine = routine;
     }
 
     public static CardListFragment newInstance() {
-        CardListFragment fragment = new CardListFragment();
+        CardListFragment fragment = new CardListFragment(new Routine(0,"New Routine",0));
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -103,16 +106,9 @@ public class CardListFragment extends Fragment {
     }
     private void setupMvp() {
         binding.routineButton.setText(getRoutineLabel());
+        binding.routineTitle.setText(routine.name());
+        binding.totalTime.setVisibility(View.GONE);
 
-        var isEvening = activityModel.isEvening();
-        if(isEvening){
-            binding.routineTitle.setText("Evening Routine");
-            binding.totalTime.setVisibility(View.GONE);
-        }
-        else{
-            binding.routineTitle.setText("Morning Routine");
-            binding.totalTime.setVisibility(View.GONE);
-        }
 
         binding.routineButton.setOnClickListener(v -> {
             toggleRoutine();

@@ -52,7 +52,7 @@ public class RoutineListFragment extends Fragment {
 
             // Example: Replace fragment on click
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, new CardListFragment());
+            transaction.replace(R.id.fragment_container, new CardListFragment(routine));
             transaction.addToBackStack(null);
             transaction.commit();
         });
