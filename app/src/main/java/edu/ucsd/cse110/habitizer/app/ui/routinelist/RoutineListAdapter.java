@@ -8,16 +8,27 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+import java.util.ArrayList;
+import edu.ucsd.cse110.habitizer.app.R;
 
 import java.util.ArrayList;
 import java.util.List;
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemRoutineBinding;
+import edu.ucsd.cse110.habitizer.app.ui.tasklist.CardListFragment;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 
 public class RoutineListAdapter extends ArrayAdapter<Routine> {
     private Routine currRoutine;
-    public RoutineListAdapter(Context context, List<Routine> routines) {
+    private OnItemClickListener listener;
+    public interface OnItemClickListener {
+        void onItemClick(Routine routine);
+    }
+    public RoutineListAdapter(Context context, List<Routine> routines,OnItemClickListener listener) {
         super(context, 0, new ArrayList<>(routines)); // Ensuring a mutable list
+        this.listener = listener;
     }
 
     @NonNull
@@ -44,6 +55,7 @@ public class RoutineListAdapter extends ArrayAdapter<Routine> {
 
         binding.getRoot().setOnClickListener(v -> {
             this.currRoutine = routine;
+            listener.onItemClick(routine);
         });
 
 

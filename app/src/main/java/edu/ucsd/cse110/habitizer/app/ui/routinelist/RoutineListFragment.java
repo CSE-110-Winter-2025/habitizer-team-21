@@ -5,15 +5,20 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import java.util.ArrayList;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
+import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentRoutineListBinding;
 import edu.ucsd.cse110.habitizer.app.ui.routinelist.RoutineListAdapter;
+import edu.ucsd.cse110.habitizer.app.ui.tasklist.CardListFragment;
 
 public class RoutineListFragment extends Fragment {
     private MainViewModel activityModel;
@@ -41,7 +46,16 @@ public class RoutineListFragment extends Fragment {
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
         // Initialize the Adapter with an empty list
-        this.adapter = new RoutineListAdapter(requireContext(), new ArrayList<>());
+        this.adapter = new RoutineListAdapter(requireContext(), new ArrayList<>(),routine -> {
+            // Handle the click event
+            Toast.makeText(getContext(), "Clicked: " + routine.name(), Toast.LENGTH_SHORT).show();
+
+            // Example: Replace fragment on click
+            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, new CardListFragment());
+            transaction.addToBackStack(null);
+            transaction.commit();
+        });
 
         // Observe task changes from ViewModel
         activityModel.getOrderedRoutines().observe(routines -> {
@@ -63,6 +77,12 @@ public class RoutineListFragment extends Fragment {
 
 
         binding.routineList.setAdapter(adapter);
+        /*binding.getRoot().setOnClickListener(v ->{
+            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, new CardListFragment()); // Replace with your new fragment
+            transaction.addToBackStack(null); // Allow back navigation
+            transaction.commit();
+        });*/
 
         // Open dialog to add new tasks
         binding.floatingActionButton.setOnClickListener(v -> {
