@@ -2,23 +2,13 @@ package edu.ucsd.cse110.habitizer.app;
 
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 
-import android.widget.Button;
-import android.widget.ListView;
-import android.graphics.Paint;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.HashSet;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,7 +54,7 @@ public class MainViewModel extends ViewModel {
      * Initializes routine as a parameter for the MainViewModel, which is initialized
      * within the HabitizerApplication
      * @param taskRepository from the app
-     * @param routine from the app
+     * @param routineRepository from the app
      */
     public MainViewModel(TaskRepository taskRepository, RoutineRepository routineRepository) {
         this.taskRepository = taskRepository;
@@ -127,9 +117,6 @@ public class MainViewModel extends ViewModel {
         taskRepository = new TaskRepository(InMemoryDataSource.fromDefault());
         taskRepository.findAll().observe(cards -> {
             if (cards == null) return; // not ready yet, ignore
-            for (Task card : cards) {
-                System.out.println("Task: " + card.task() + ", RoutineID: " + card.getRoutineId());
-            }
             var newOrderedCards = cards.stream()
                     .filter(card -> card.getRoutineId() == id)
                     .sorted(Comparator.comparingInt(Task::sortOrder))
@@ -138,12 +125,6 @@ public class MainViewModel extends ViewModel {
             orderedTasks.setValue(newOrderedCards);
         });
 
-    }
-
-
-
-    public int getRoutineID(){
-        return 0;
     }
 
 }

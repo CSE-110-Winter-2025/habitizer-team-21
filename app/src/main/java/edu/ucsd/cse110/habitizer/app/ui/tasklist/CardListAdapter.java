@@ -13,8 +13,6 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
-import java.util.function.Consumer;
-import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemCardBinding;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 

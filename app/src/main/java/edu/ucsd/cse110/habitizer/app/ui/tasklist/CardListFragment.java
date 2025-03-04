@@ -23,7 +23,6 @@ public class CardListFragment extends Fragment {
     private CardListAdapter adapter;
     /**
      * ROUTINE:
-     *
      * private boolean isRoutineStarted;
      * private boolean isRoutineCompleted;
      * removing these fields because we can access them through activityModel

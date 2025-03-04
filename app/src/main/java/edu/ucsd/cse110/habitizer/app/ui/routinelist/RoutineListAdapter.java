@@ -8,16 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
-import java.util.ArrayList;
-import edu.ucsd.cse110.habitizer.app.R;
-
 import java.util.ArrayList;
 import java.util.List;
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemRoutineBinding;
-import edu.ucsd.cse110.habitizer.app.ui.tasklist.CardListFragment;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 
 public class RoutineListAdapter extends ArrayAdapter<Routine> {
