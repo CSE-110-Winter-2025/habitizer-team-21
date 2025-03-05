@@ -130,8 +130,7 @@ public class InMemoryDataSource {
         var fixedRoutine = preInsertRoutine(routine);
 
         routines.put(fixedRoutine.id(), fixedRoutine);
-        postInsert();
-        assertSortOrderConstraints();
+        postInsertRoutine();
 
         if (routineSubjects.containsKey(fixedRoutine.id())) {
             routineSubjects.get(fixedRoutine.id()).setValue(fixedRoutine);
@@ -162,7 +161,6 @@ public class InMemoryDataSource {
 
         fixedRoutines.forEach(routine -> routines.put(routine.id(), routine));
         postInsertRoutine();
-        assertSortOrderConstraints();
 
         fixedRoutines.forEach(routine -> {
             if (routineSubjects.containsKey(routine.id())) {

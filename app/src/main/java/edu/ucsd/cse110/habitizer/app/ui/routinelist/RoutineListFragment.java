@@ -50,7 +50,7 @@ public class RoutineListFragment extends Fragment {
         // Initialize the Adapter with an empty list
         this.adapter = new RoutineListAdapter(requireContext(), new ArrayList<>(),routine -> {
             // Handle the click event
-            Toast.makeText(getContext(), "Clicked: " + routine.name() + " - Routine ID: " + routine.id(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Clicked: " + routine.name() + " - Routine ID: " + routine.id() + " - Routine Sort Order: " + routine.sortOrder(), Toast.LENGTH_SHORT).show();
 
             // Example: Replace fragment on click
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
@@ -85,7 +85,6 @@ public class RoutineListFragment extends Fragment {
         binding.floatingActionButton.setOnClickListener(v -> {
             var newRoutine = new Routine(nextId, "New Routine",-1);
             nextId++;
-            activityModel.addRoutine(newRoutine);
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, new CardListFragment(newRoutine));
             transaction.addToBackStack(null);

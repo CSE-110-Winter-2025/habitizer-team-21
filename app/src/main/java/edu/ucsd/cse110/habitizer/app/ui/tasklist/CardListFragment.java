@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,10 +16,11 @@ import java.util.ArrayList;
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentCardListBinding;
 import edu.ucsd.cse110.habitizer.app.ui.tasklist.dialog.CreateTaskFragment;
+import edu.ucsd.cse110.habitizer.app.ui.tasklist.dialog.RenameRoutineFragment;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
-public class CardListFragment extends Fragment {
+public class CardListFragment extends Fragment implements RenameRoutineFragment.RenameRoutineListener {
     private MainViewModel activityModel;
     private FragmentCardListBinding binding;
     private CardListAdapter adapter;
@@ -33,13 +36,14 @@ public class CardListFragment extends Fragment {
     private long lastTaskStartTime;
     private Routine routine;
 
+
     public CardListFragment(Routine routine) {
         // Required empty public constructor
         this.routine = routine;
     }
 
-    public static CardListFragment newInstance() {
-        CardListFragment fragment = new CardListFragment(new Routine(null,"New Routine",-1));
+    public static CardListFragment newInstance(Routine routine) {
+        CardListFragment fragment = new CardListFragment(routine);
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -71,6 +75,9 @@ public class CardListFragment extends Fragment {
          * this.isRoutineCompleted = activityModel.isRoutineCompleted();
          * this.isRoutineStarted = activityModel.isRoutineStarted();
          */
+        if(routine.sortOrder()==-1){
+            activityModel.addRoutine(routine);
+        }
     }
 
     @Nullable
@@ -90,6 +97,11 @@ public class CardListFragment extends Fragment {
         binding.floatingActionButton.setOnClickListener(v -> {
             var dialogFragment = CreateTaskFragment.newInstance(routine);
             dialogFragment.show(getParentFragmentManager(), "CreateCardDialogFragment");
+        });
+
+        binding.routineTitle.setOnClickListener(v -> {
+            var dialogFragment = RenameRoutineFragment.newInstance(routine);
+            dialogFragment.show(getChildFragmentManager(), "RenameRoutineDialog");
         });
 
         setupMvp();
@@ -175,5 +187,16 @@ public class CardListFragment extends Fragment {
     }
     public void setLastTaskStartTime(long startTime){
         this.lastTaskStartTime = startTime;
+    }
+
+    @Override
+    public void onRoutineRenamed(Routine updatedRoutine) {
+        if(routine.sortOrder()==-1){
+            activityModel.addRoutine(routine);
+        }
+        else{
+            activityModel.saveRoutine(updatedRoutine);
+        }
+        binding.routineTitle.setText(updatedRoutine.name());
     }
 }

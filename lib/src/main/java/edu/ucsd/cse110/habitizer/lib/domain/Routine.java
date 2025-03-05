@@ -48,4 +48,8 @@ public class Routine implements Serializable {
     public Routine withId(int id) {
         return new Routine(id, this.name, this.sortOrder);
     }
+
+    public void rename(String name){
+        this.name = name;
+    }
 }

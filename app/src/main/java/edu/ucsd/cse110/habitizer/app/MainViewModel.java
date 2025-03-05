@@ -129,5 +129,9 @@ public class MainViewModel extends ViewModel {
         });
 
     }
+    public void saveRoutine(Routine routine){
+        routineRepository.save(routine);
+    }
+
 
 }
