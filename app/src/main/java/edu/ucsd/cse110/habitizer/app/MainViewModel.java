@@ -138,4 +138,20 @@ public class MainViewModel extends ViewModel {
     }
 
 
+    public void remove(Task task) { // deletes task
+        if (task != null && task.id() != null){
+            taskRepository.remove(task.id());
+        }
+    }
+    public void remove(int taskId) { // deletes task
+            taskRepository.remove(taskId);
+    }
+    public void save(Task task) { //saves task
+        taskRepository.save(task);
+    }
+    public void save(List<Task> tasks) { //saves list
+        taskRepository.save(tasks);
+    }
+
 }
+

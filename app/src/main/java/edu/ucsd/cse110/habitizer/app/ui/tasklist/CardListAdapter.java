@@ -10,11 +10,13 @@ import android.graphics.Paint;
 import java.util.function.Consumer;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemCardBinding;
+import edu.ucsd.cse110.habitizer.app.ui.tasklist.dialog.EditTaskFragment;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class CardListAdapter extends ArrayAdapter<Task> {
@@ -23,8 +25,13 @@ public class CardListAdapter extends ArrayAdapter<Task> {
     private long routineStartTime;
     private long lastTaskTime;
     private long total = 0;
-    public CardListAdapter(Context context, List<Task> tasks) {
+    private final Consumer<Integer> onDeleteClick;
+    private final Consumer<Task> onEditClick;
+
+    public CardListAdapter(Context context, List<Task> tasks, Consumer<Integer> onDeleteClick, Consumer<Task> onEditClick) {
         super(context, 0, new ArrayList<>(tasks)); // Ensuring a mutable list
+        this.onDeleteClick = onDeleteClick != null ? onDeleteClick : id -> {};
+        this.onEditClick = onEditClick != null ? onEditClick : task -> {};
         checkEnabled = false;
     }
     public void setRoutineStartTime(long time) {
@@ -74,8 +81,12 @@ public class CardListAdapter extends ArrayAdapter<Task> {
                 total += m;
             }
         });
-
-
+        binding.editButton.setOnClickListener(v -> { // handles edit button function functionality
+            if (task.id() == null){
+                return;
+            }
+            onEditClick.accept(task);
+        });
 
         return binding.getRoot();
     }
