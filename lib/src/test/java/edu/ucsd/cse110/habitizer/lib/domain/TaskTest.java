@@ -48,4 +48,18 @@ public class TaskTest {
         assertTrue(task1.completed());
         assertFalse(task2.completed());
     }
+    @Test
+    public void testRenameTask(){ //tests if renaming works
+        var task = new Task(1,"Old", 0);
+        task.renameTask("New");
+        assertEquals("New", task.task());
+    }
+
+    @Test
+    public void testDeleteTask(){ //test if delete works
+        var task = new Task(1, "Task To Delete",0);
+        assertFalse(task.isDeleted());
+        task.deleteTask();
+        assertTrue(task.isDeleted());
+    }
 }
