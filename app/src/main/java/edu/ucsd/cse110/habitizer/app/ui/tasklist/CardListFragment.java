@@ -119,7 +119,8 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
     private void setupMvp() {
         binding.routineButton.setText(getRoutineLabel());
         binding.routineTitle.setText(routine.name());
-        binding.totalTime.setVisibility(View.GONE);
+        //binding.totalTime.setVisibility(View.GONE);
+        binding.goalTime.setText("Goal Time: " + Integer.toString(routine.getGoalTime()) + "m");
 
 
         binding.routineButton.setOnClickListener(v -> {
@@ -164,7 +165,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
             adapter.disableCheck();
             binding.routineButton.setText(getRoutineLabel());
             long total = adapter.getTotal();
-            binding.totalTime.setText("Total: " + total + "m");
+            binding.totalTime.setText("Total Time: " + total + "m");
             binding.totalTime.setVisibility(View.VISIBLE);
         }
         else {
@@ -191,12 +192,8 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
 
     @Override
     public void onRoutineRenamed(Routine updatedRoutine) {
-        if(routine.sortOrder()==-1){
-            activityModel.addRoutine(routine);
-        }
-        else{
-            activityModel.saveRoutine(updatedRoutine);
-        }
-        binding.routineTitle.setText(updatedRoutine.name());
+        activityModel.saveRoutine(routine);
+        binding.routineTitle.setText(routine.name());
+        binding.goalTime.setText("Goal Time: " + Integer.toString(routine.getGoalTime()) + "m");
     }
 }

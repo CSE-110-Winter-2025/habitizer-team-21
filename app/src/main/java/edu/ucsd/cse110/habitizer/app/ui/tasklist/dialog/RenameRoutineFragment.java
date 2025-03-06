@@ -51,7 +51,8 @@ public class RenameRoutineFragment extends DialogFragment{
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         this.binding = FragmentDialogRenameRoutineBinding.inflate(getLayoutInflater());
-
+        binding.goalTime.setText(Integer.toString(routine.getGoalTime()));
+        binding.routineName.setText(routine.name());
         return new AlertDialog.Builder(getActivity())
                 .setTitle("Edit Routine Information")
                 .setView(binding.getRoot()) //
@@ -62,6 +63,7 @@ public class RenameRoutineFragment extends DialogFragment{
 
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         routine.rename(binding.routineName.getText().toString());
+        routine.setGoalTime(Integer.parseInt(binding.goalTime.getText().toString()));
         if (listener != null) {
             listener.onRoutineRenamed(routine);
         }

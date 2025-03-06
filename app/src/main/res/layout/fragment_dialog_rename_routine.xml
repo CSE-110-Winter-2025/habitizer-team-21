@@ -7,30 +7,56 @@
 
     <EditText
         android:id="@+id/routineName"
-        android:layout_width="354dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_width="220dp"
+        android:layout_height="50dp"
         android:autofillHints=""
         android:ems="10"
         android:inputType="text"
-        android:text="New Routine Name"
+        app:layout_constraintBottom_toTopOf="@+id/goal_time"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/routineLabel"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="LabelFor" />
 
     <EditText
         android:id="@+id/goal_time"
-        android:layout_width="349dp"
+        android:layout_width="220dp"
         android:layout_height="50dp"
-        android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="number"
-        android:text="New Goal Time"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/routineGoalLabel"
         app:layout_constraintTop_toBottomOf="@+id/routineName" />
+
+    <TextView
+        android:id="@+id/routineLabel"
+        android:layout_width="143dp"
+        android:layout_height="31dp"
+        android:text="Routine Name: "
+        android:textAlignment="textEnd"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/routineGoalLabel"
+        app:layout_constraintEnd_toStartOf="@+id/routineName"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/routineGoalLabel"
+        android:layout_width="143dp"
+        android:layout_height="31dp"
+        android:text="Goal Time: "
+        android:textAlignment="textEnd"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/goal_time"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/routineLabel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

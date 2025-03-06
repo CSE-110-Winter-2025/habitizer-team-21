@@ -16,6 +16,7 @@ import edu.ucsd.cse110.habitizer.lib.util.Subject;
  */
 public class InMemoryDataSource {
     private int nextId = 0;
+    private int nextIdR = 3;
 
     private int minSortOrder = Integer.MAX_VALUE;
     private int maxSortOrder = Integer.MIN_VALUE;
@@ -54,8 +55,17 @@ public class InMemoryDataSource {
     );
 
     public final static List<Routine> ROUTINES_LIST = List.of(
-            new Routine(1,"Morning Routine",1),
-            new Routine(2,"Evening Routine",2)
+            Routine.builder().setName("Morning Routine")
+                    .setGoalTime(45)
+                    .setId(1)
+                    .setSortOrder(1)
+                    .build(),
+            Routine.builder()
+                    .setName("Evening Routine")
+                    .setGoalTime(30)
+                    .setId(2)
+                    .setSortOrder(2)
+                    .build()
     );
 
     public static InMemoryDataSource fromDefault() {
@@ -232,14 +242,14 @@ public class InMemoryDataSource {
     }
     private Routine preInsertRoutine(Routine routine) {
         var id = routine.id();
-        if (id == null) {
+        if (id == null || id < 0) {
             // If the task has no id, give it one.
-            routine = routine.withId(nextId++);
+            routine = routine.withId(nextIdR++);
         }
-        else if (id > nextId) {
+        else if (id > nextIdR) {
             // If the task has an id, update nextId if necessary to avoid giving out the same
             // one. This is important for when we pre-load tasks like in fromDefault().
-            nextId = id + 1;
+            nextIdR = id + 1;
         }
 
         return routine;

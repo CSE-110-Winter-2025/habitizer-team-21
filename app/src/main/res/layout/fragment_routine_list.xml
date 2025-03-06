@@ -20,8 +20,10 @@
 
     <TextView
         android:id="@+id/app_name"
-        android:layout_width="407dp"
-        android:layout_height="64dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="11dp"
         android:text="Habitizer"
         android:textAlignment="center"
         android:textAllCaps="false"
@@ -36,12 +38,12 @@
 
     <ListView
         android:id="@+id/routine_list"
-        android:layout_width="397dp"
-        android:layout_height="548dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/app_name"
+        app:layout_constraintTop_toBottomOf="@+id/app_name"
         tools:listitem="@layout/list_item_routine">
 
     </ListView>

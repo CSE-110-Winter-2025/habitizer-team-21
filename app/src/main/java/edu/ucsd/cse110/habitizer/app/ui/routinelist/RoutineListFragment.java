@@ -22,7 +22,7 @@ import edu.ucsd.cse110.habitizer.app.ui.tasklist.CardListFragment;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 
 public class RoutineListFragment extends Fragment {
-    private int nextId = 3;
+
     private MainViewModel activityModel;
     private FragmentRoutineListBinding binding;
     private RoutineListAdapter adapter;
@@ -83,8 +83,8 @@ public class RoutineListFragment extends Fragment {
 
         // Open dialog to add new tasks
         binding.floatingActionButton.setOnClickListener(v -> {
-            var newRoutine = new Routine(nextId, "New Routine",-1);
-            nextId++;
+            var newRoutine = Routine.builder().build();
+            //nextId++;
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, new CardListFragment(newRoutine));
             transaction.addToBackStack(null);
