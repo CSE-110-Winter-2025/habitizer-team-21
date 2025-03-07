@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.graphics.Paint;
+import java.util.function.Consumer;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -14,8 +15,6 @@ import androidx.fragment.app.FragmentActivity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
-import java.util.function.Consumer;
-import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemCardBinding;
 import edu.ucsd.cse110.habitizer.app.ui.tasklist.dialog.EditTaskFragment;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;

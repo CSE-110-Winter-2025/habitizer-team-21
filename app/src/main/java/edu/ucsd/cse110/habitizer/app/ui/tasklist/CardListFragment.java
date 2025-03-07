@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -17,26 +19,35 @@ import java.util.Objects;
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentCardListBinding;
 import edu.ucsd.cse110.habitizer.app.ui.tasklist.dialog.CreateTaskFragment;
+import edu.ucsd.cse110.habitizer.app.ui.tasklist.dialog.RenameRoutineFragment;
+import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.app.ui.tasklist.dialog.EditTaskFragment;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
-public class CardListFragment extends Fragment {
+public class CardListFragment extends Fragment implements RenameRoutineFragment.RenameRoutineListener {
     private MainViewModel activityModel;
     private FragmentCardListBinding binding;
     private CardListAdapter adapter;
-    private boolean isRoutineStarted;
-    private boolean isRoutineCompleted;
+    /**
+     * ROUTINE:
+     * private boolean isRoutineStarted;
+     * private boolean isRoutineCompleted;
+     * removing these fields because we can access them through activityModel
+     */
 
     //time variables
     private long routineStartTime;
     private long lastTaskStartTime;
+    private Routine routine;
 
-    public CardListFragment() {
+
+    public CardListFragment(Routine routine) {
         // Required empty public constructor
+        this.routine = routine;
     }
 
-    public static CardListFragment newInstance() {
-        CardListFragment fragment = new CardListFragment();
+    public static CardListFragment newInstance(Routine routine) {
+        CardListFragment fragment = new CardListFragment(routine);
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -52,12 +63,15 @@ public class CardListFragment extends Fragment {
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
         // Initialize the Adapter with an empty list
+
+        
         this.adapter = new CardListAdapter(
                 requireContext(),
                 new ArrayList<>(),
                 task -> activityModel.remove(task),
                 task -> onEditTask(task)
                 );
+        activityModel.loadTasksFromRoutine(routine.id());
 
 
         // Observe task changes from ViewModel
@@ -67,9 +81,15 @@ public class CardListFragment extends Fragment {
             adapter.addAll(new ArrayList<>(tasks)); // Ensure mutable copy
             adapter.notifyDataSetChanged();
         });
-
-        this.isRoutineCompleted = false;
-        this.isRoutineStarted = false;
+        /**
+         * ROUTINE:
+         * Removing these
+         * this.isRoutineCompleted = activityModel.isRoutineCompleted();
+         * this.isRoutineStarted = activityModel.isRoutineStarted();
+         */
+        if(routine.sortOrder()==-1){
+            activityModel.addRoutine(routine);
+        }
     }
     public void onEditTask(Task task){ // edit button functionality
         if (task.id()==null) return;
@@ -114,8 +134,13 @@ public class CardListFragment extends Fragment {
 
         // Open dialog to add new tasks
         binding.floatingActionButton.setOnClickListener(v -> {
-            var dialogFragment = CreateTaskFragment.newInstance();
+            var dialogFragment = CreateTaskFragment.newInstance(routine);
             dialogFragment.show(getParentFragmentManager(), "CreateCardDialogFragment");
+        });
+
+        binding.routineTitle.setOnClickListener(v -> {
+            var dialogFragment = RenameRoutineFragment.newInstance(routine);
+            dialogFragment.show(getChildFragmentManager(), "RenameRoutineDialog");
         });
 
         setupMvp();
@@ -132,16 +157,10 @@ public class CardListFragment extends Fragment {
     }
     private void setupMvp() {
         binding.routineButton.setText(getRoutineLabel());
+        binding.routineTitle.setText(routine.name());
+        //binding.totalTime.setVisibility(View.GONE);
+        binding.goalTime.setText("Goal Time: " + Integer.toString(routine.getGoalTime()) + "m");
 
-        var isEvening = activityModel.isEvening();
-        if(isEvening){
-            binding.routineTitle.setText("Evening Routine");
-            binding.totalTime.setVisibility(View.GONE);
-        }
-        else{
-            binding.routineTitle.setText("Morning Routine");
-            binding.totalTime.setVisibility(View.GONE);
-        }
 
         binding.routineButton.setOnClickListener(v -> {
             toggleRoutine();
@@ -159,11 +178,15 @@ public class CardListFragment extends Fragment {
 
     }
 
+    /**
+     * ROUTINE
+     * Changed function to use activityModel for routine info
+     */
     private String getRoutineLabel() {
-        if (isRoutineStarted && !isRoutineCompleted) {
+        if (routine.isStarted() && !routine.isCompleted()) {
             return "End Routine";
         }
-        else if (isRoutineCompleted){
+        else if (routine.isCompleted()){
             return "Routine Complete";
         }
         else{
@@ -171,17 +194,21 @@ public class CardListFragment extends Fragment {
         }
     }
 
+    /**
+     * ROUTINE:
+     * Changed function to access Routine information through activityModel
+     */
     private void toggleRoutine() {
-        if(isRoutineStarted){
-            isRoutineCompleted = true;
+        if(routine.isStarted()){
+            routine.complete();
             adapter.disableCheck();
             binding.routineButton.setText(getRoutineLabel());
             long total = adapter.getTotal();
-            binding.totalTime.setText("Total: " + total + "m");
+            binding.totalTime.setText("Total Time: " + total + "m");
             binding.totalTime.setVisibility(View.VISIBLE);
         }
         else {
-            isRoutineStarted = true;
+            routine.start();
             adapter.enableCheck();
             binding.routineButton.setText(getRoutineLabel());
             //track the routine start time
@@ -191,13 +218,6 @@ public class CardListFragment extends Fragment {
         }
     }
 
-    public boolean isRoutineCompleted() {
-        return isRoutineCompleted;
-    }
-
-    public boolean isRoutineStarted() {
-        return isRoutineStarted;
-    }
 
     public long getRoutineStartTime(){
         return routineStartTime;
@@ -207,5 +227,12 @@ public class CardListFragment extends Fragment {
     }
     public void setLastTaskStartTime(long startTime){
         this.lastTaskStartTime = startTime;
+    }
+
+    @Override
+    public void onRoutineRenamed(Routine updatedRoutine) {
+        activityModel.saveRoutine(routine);
+        binding.routineTitle.setText(routine.name());
+        binding.goalTime.setText("Goal Time: " + Integer.toString(routine.getGoalTime()) + "m");
     }
 }

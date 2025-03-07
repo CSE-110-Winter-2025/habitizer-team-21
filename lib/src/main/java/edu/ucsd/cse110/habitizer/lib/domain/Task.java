@@ -17,14 +17,16 @@ public class Task implements Serializable{
     private long timeSpent;
 
     private long timeDisplayed;
+    private int routineId;
 
-    public Task(@Nullable Integer id, @NonNull String task, int sortOrder){
+    public Task(@Nullable Integer id, @NonNull String task, int sortOrder, int routineId){
         this.completed = false;
         this.deleted = false;
         this.id = id;
         this.task = task;
         this.sortOrder = sortOrder;
         this.timeSpent = 0L;
+        this.routineId = routineId;
     }
 
     public @Nullable java.lang.Integer id(){return id;}
@@ -32,6 +34,7 @@ public class Task implements Serializable{
     public @NonNull String task(){return task;}
 
     public @NonNull Boolean completed(){ return completed;}
+    public int getRoutineId(){return routineId;}
 
     @Override
     public boolean equals(Object o){
@@ -49,11 +52,11 @@ public class Task implements Serializable{
     }
 
     public Task withSortOrder(int sortOrder) {
-        return new Task(this.id, this.task, sortOrder);
+        return new Task(this.id, this.task, sortOrder, this.routineId);
     }
 
     public Task withId(int id) {
-        return new Task(id, this.task, this.sortOrder);
+        return new Task(id, this.task, this.sortOrder, this.routineId);
     }
 
     public void complete(){
