@@ -19,6 +19,9 @@ import edu.ucsd.cse110.habitizer.app.databinding.ListItemCardBinding;
 import edu.ucsd.cse110.habitizer.app.ui.tasklist.dialog.EditTaskFragment;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
+interface TaskTimeResetCallback {
+    void onTaskTimeReset(long newTime);
+}
 public class CardListAdapter extends ArrayAdapter<Task> {
     private boolean checkEnabled;
     private final HashSet<Integer> struckThroughTasks = new HashSet<>();
@@ -27,16 +30,24 @@ public class CardListAdapter extends ArrayAdapter<Task> {
     private long total = 0;
     private final Consumer<Integer> onDeleteClick;
     private final Consumer<Task> onEditClick;
+    private TaskTimeResetCallback taskTimeResetCallback;
 
-    public CardListAdapter(Context context, List<Task> tasks, Consumer<Integer> onDeleteClick, Consumer<Task> onEditClick) {
+
+
+
+    public CardListAdapter(Context context, List<Task> tasks, Consumer<Integer> onDeleteClick, Consumer<Task> onEditClick, TaskTimeResetCallback callback) {
         super(context, 0, new ArrayList<>(tasks)); // Ensuring a mutable list
         this.onDeleteClick = onDeleteClick != null ? onDeleteClick : id -> {};
         this.onEditClick = onEditClick != null ? onEditClick : task -> {};
+        this.taskTimeResetCallback = callback;
         checkEnabled = false;
     }
     public void setRoutineStartTime(long time) {
         this.routineStartTime = time;
         this.lastTaskTime = time;
+    }
+    public long getLastTaskTime(){
+        return lastTaskTime;
     }
     @NonNull
     @Override
@@ -70,15 +81,24 @@ public class CardListAdapter extends ArrayAdapter<Task> {
                 binding.Task.setPaintFlags(binding.Task.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 binding.taskTime.setVisibility(View.VISIBLE);
                 long timeTook = (System.currentTimeMillis() - lastTaskTime);
+                int seconds = (int) (timeTook / 1000);
                 long m = timeTook / 60000;
                 long s = (timeTook %60000) / 1000;
                 if (s <= 30){
                     m++;
                 }
                 lastTaskTime = System.currentTimeMillis();
-                //long minutes = routineStartTime;
-                binding.taskTime.setText("Time: " + m + "m");
-                total += m;
+                if (taskTimeResetCallback != null){
+                    taskTimeResetCallback.onTaskTimeReset(System.currentTimeMillis());
+                }
+                if(seconds >= 60){
+                    binding.taskTime.setText("Time: " + m + "m");
+                    total += m;
+                } else {
+                    int temp = seconds/5;
+                    binding.taskTime.setText("Time: " + temp*5 + "s");
+                }
+
             }
         });
         binding.editButton.setOnClickListener(v -> { // handles edit button function functionality
