@@ -13,17 +13,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.ucsd.cse110.habitizer.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.TaskRepository;
+import edu.ucsd.cse110.habitizer.lib.util.MutableSubject;
+import edu.ucsd.cse110.habitizer.lib.util.SimpleSubject;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 
 public class MainViewModel extends ViewModel {
-    private final Subject<List<Task>> orderedTasks;
-    private final Subject<List<Routine>> orderedRoutines;
+    private final MutableSubject<List<Task>> orderedTasks;
+    private final MutableSubject<List<Routine>> orderedRoutines;
     private TaskRepository taskRepository;
     private RoutineRepository routineRepository;
     /**
@@ -59,9 +60,9 @@ public class MainViewModel extends ViewModel {
     public MainViewModel(TaskRepository taskRepository, RoutineRepository routineRepository) {
         this.taskRepository = taskRepository;
         this.routineRepository = routineRepository;
-        this.orderedTasks = new Subject<>();
+        this.orderedTasks = new SimpleSubject<>();
         this.orderedTasks.setValue(new ArrayList<>()); // Initialize with an empty list
-        this.orderedRoutines = new Subject<>();
+        this.orderedRoutines = new SimpleSubject<>();
         this.orderedRoutines.setValue(new ArrayList<>());
         this.strikethroughItems = new HashSet<>();
 
