@@ -36,9 +36,8 @@
 
     <ListView
         android:id="@+id/task_list"
-        android:layout_width="0dp"
-        android:layout_height="587dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="407dp"
+        android:layout_height="632dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/totalTime"
@@ -48,8 +47,8 @@
 
     <Button
         android:id="@+id/routine_button"
-        android:layout_width="311dp"
-        android:layout_height="57dp"
+        android:layout_width="190dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="#4CAF50"
         android:fontFamily="@font/ubuntu"
@@ -57,7 +56,6 @@
         android:textSize="24sp"
         android:typeface="normal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/floatingActionButton"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -99,5 +97,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/routine_title"
         app:layout_constraintVertical_bias="0.512" />
+
+    <ToggleButton
+        android:id="@+id/togbtn"
+        android:layout_width="133dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="ToggleButton"
+        android:textOff="Pause"
+        android:textOn="Resume"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/floatingActionButton"
+        app:layout_constraintStart_toEndOf="@+id/routine_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

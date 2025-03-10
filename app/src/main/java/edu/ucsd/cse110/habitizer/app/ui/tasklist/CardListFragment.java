@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,6 +44,8 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
     private long routineStartTime;
     private long lastTaskStartTime;
     private Routine routine;
+    private ToggleButton togbtn;
+    private  boolean isPaused = false;
 
     private Runnable routineTimeRunnable = new Runnable() {
         public void run() {
@@ -130,7 +134,11 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
         if(routine.sortOrder()==-1){
             activityModel.addRoutine(routine);
         }
+
+
+
     }
+
     public void onEditTask(Task task){ // edit button functionality
         if (task.id()==null) return;
 
@@ -202,6 +210,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
         binding.goalTime.setText("Goal Time: " + Integer.toString(routine.getGoalTime()) + "m");
 
 
+
         binding.routineButton.setOnClickListener(v -> {
             toggleRoutine();
 
@@ -215,6 +224,19 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
                 binding.routineButton.setBackgroundColor(color);
             }
         });
+        binding.togbtn.setOnClickListener(v->{
+            routineStartTime = System.currentTimeMillis();
+            if(binding.togbtn.isChecked()){
+                adapter.disableCheck();
+                isPaused=true;
+            }else{
+                isPaused=false;
+                adapter.enableCheck();
+                long newroutineStartTime = System.currentTimeMillis();
+                lastTaskStartTime = newroutineStartTime- routineStartTime;
+                adapter.setRoutineStartTime(System.currentTimeMillis()-lastTaskStartTime);
+            }
+        });
 
     }
 
@@ -224,12 +246,15 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
      */
     private String getRoutineLabel() {
         if (routine.isStarted() && !routine.isCompleted()) {
+            binding.togbtn.setEnabled(true);
             return "End Routine";
         }
         else if (routine.isCompleted()){
+            binding.togbtn.setEnabled(false);
             return "Routine Complete";
         }
         else{
+            binding.togbtn.setEnabled(false);
             return "Start Routine";
         }
     }
