@@ -2,47 +2,20 @@ package edu.ucsd.cse110.habitizer.lib.domain;
 
 import java.util.List;
 
-import edu.ucsd.cse110.habitizer.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
-public class RoutineRepository {
-    private final InMemoryDataSource dataSource;
+public interface RoutineRepository {
+    Subject<Routine> find(int id);
 
-    public RoutineRepository(InMemoryDataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+    Subject<List<Routine>> findAll();
 
-    public Subject<Routine> find(int id) {
-        return dataSource.getRoutineSubject(id);
-    }
+    void save(Routine routine);
 
-    public Subject<List<Routine>> findAll() {
-        return dataSource.getAllRoutinesSubject();
-    }
+    void save(List<Routine> routines);
 
-    public void save(Routine routine) {
-        dataSource.putRoutine(routine);
-    }
+    void remove(int id);
 
-    public void save(List<Routine> routines) {
-        dataSource.putRoutines(routines);
-    }
+    void append(Routine routine);
 
-    public void remove(int id) {
-        dataSource.removeRoutine(id);
-    }
-
-    public void append(Routine routine){
-        dataSource.putRoutine(
-                routine.withSortOrder(dataSource.getMaxSortOrderRoutine() + 1)
-        );
-    }
-
-    public void prepend(Routine routine){
-        dataSource.shiftSortOrders(0, dataSource.getMaxSortOrderRoutine(),1);
-        dataSource.putRoutine(
-                routine.withSortOrder(dataSource.getMinSortOrder()-1)
-        );
-    }
-
+    void prepend(Routine routine);
 }

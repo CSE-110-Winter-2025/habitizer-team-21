@@ -36,12 +36,15 @@ android {
 }
 
 dependencies {
-
+    val room_version = "2.6.1"
     implementation(libs.android.material)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(project(":lib"))
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
 
     testImplementation(libs.junit4)
 

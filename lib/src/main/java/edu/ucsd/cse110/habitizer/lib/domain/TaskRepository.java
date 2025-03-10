@@ -2,47 +2,20 @@ package edu.ucsd.cse110.habitizer.lib.domain;
 
 import java.util.List;
 
-import edu.ucsd.cse110.habitizer.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
-public class TaskRepository {
-    private final InMemoryDataSource dataSource;
+public interface TaskRepository {
+    Subject<Task> find(int id);
 
-    public TaskRepository(InMemoryDataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+    Subject<List<Task>> findAll();
 
-    public Subject<Task> find(int id) {
-        return dataSource.getTaskSubject(id);
-    }
+    void save(Task task);
 
-    public Subject<List<Task>> findAll() {
-        return dataSource.getAllTasksSubject();
-    }
+    void save(List<Task> tasks);
 
-    public void save(Task task) {
-        dataSource.putTask(task);
-    }
+    void remove(int id);
 
-    public void save(List<Task> tasks) {
-        dataSource.putTasks(tasks);
-    }
+    void append(Task task);
 
-    public void remove(int id) {
-        dataSource.removeTask(id);
-    }
-
-    public void append(Task task){
-        dataSource.putTask(
-                task.withSortOrder(dataSource.getMaxSortOrder() + 1)
-        );
-    }
-
-    public void prepend(Task task){
-        dataSource.shiftSortOrders(0, dataSource.getMaxSortOrder(),1);
-        dataSource.putTask(
-                task.withSortOrder(dataSource.getMinSortOrder()-1)
-        );
-    }
-
+    void prepend(Task task);
 }
