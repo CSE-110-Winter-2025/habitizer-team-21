@@ -2,6 +2,7 @@ package edu.ucsd.cse110.habitizer.app.ui.tasklist;
 
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +25,12 @@ import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.app.ui.tasklist.dialog.EditTaskFragment;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
-public class CardListFragment extends Fragment implements RenameRoutineFragment.RenameRoutineListener {
+public class CardListFragment extends Fragment implements RenameRoutineFragment.RenameRoutineListener, TaskTimeResetCallback {
     private MainViewModel activityModel;
     private FragmentCardListBinding binding;
     private CardListAdapter adapter;
+    private Handler routineTimeHandler = new Handler();
+
     /**
      * ROUTINE:
      * private boolean isRoutineStarted;
@@ -40,6 +43,38 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
     private long lastTaskStartTime;
     private Routine routine;
 
+    private Runnable routineTimeRunnable = new Runnable() {
+        public void run() {
+            if (routine.isStarted() && !routine.isCompleted()) {
+                long elapsedMillis = System.currentTimeMillis() - routineStartTime;
+                long currentTaskMillis = System.currentTimeMillis() - CardListFragment.this.getLastTaskStartTime();
+                int minutes = (int) (elapsedMillis / 60000);
+                int seconds = (int) (currentTaskMillis / 1000);
+                binding.totalTime.setText("Total Time: " + minutes + "m");
+                binding.totalTime.setVisibility(View.VISIBLE);
+                if(seconds < 60){
+                    //5 seconds intervals
+                    int temp = seconds/5;
+
+                    binding.currTaskTime.setText("Current Task: " + temp*5 + "s");
+                } else {
+                    int temp = seconds/60;
+                    binding.currTaskTime.setText("Current Task: " + temp + "m");
+                }
+                routineTimeHandler.postDelayed(this, 1000);
+            }
+        }
+    };
+
+    private void startRoutineTimer() {
+        routineStartTime = System.currentTimeMillis();
+        lastTaskStartTime = routineStartTime;
+        routineTimeHandler.post(routineTimeRunnable);
+    }
+
+    private void stopRoutineTimer() {
+        routineTimeHandler.removeCallbacks(routineTimeRunnable);
+    }
 
     public CardListFragment(Routine routine) {
         // Required empty public constructor
@@ -53,6 +88,10 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
         return fragment;
     }
 
+    @Override
+    public void onTaskTimeReset(long newTime){
+        setLastTaskStartTime(newTime);
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +108,8 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
                 requireContext(),
                 new ArrayList<>(),
                 task -> activityModel.remove(task),
-                task -> onEditTask(task)
+                task -> onEditTask(task),
+                this
                 );
         activityModel.loadTasksFromRoutine(routine.id());
 
@@ -204,17 +244,18 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
             adapter.disableCheck();
             binding.routineButton.setText(getRoutineLabel());
             long total = adapter.getTotal();
-            binding.totalTime.setText("Total Time: " + total + "m");
-            binding.totalTime.setVisibility(View.VISIBLE);
+            //binding.totalTime.setText("Total Time: " + total + "m");
+            //binding.totalTime.setVisibility(View.VISIBLE);
+            stopRoutineTimer();
         }
         else {
             routine.start();
             adapter.enableCheck();
             binding.routineButton.setText(getRoutineLabel());
             //track the routine start time
-            routineStartTime = System.currentTimeMillis();
-            lastTaskStartTime = routineStartTime;
-            adapter.setRoutineStartTime(routineStartTime);
+            startRoutineTimer();
+            lastTaskStartTime = System.currentTimeMillis();
+            adapter.setRoutineStartTime(lastTaskStartTime);
         }
     }
 
