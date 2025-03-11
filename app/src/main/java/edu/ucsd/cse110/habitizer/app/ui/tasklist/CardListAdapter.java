@@ -131,4 +131,7 @@ public class CardListAdapter extends ArrayAdapter<Task> {
     public long getTotal(){
         return total;
     }
+    public void updatePausedTaskTimes(long ptotal){
+        lastTaskTime+= ptotal;
+    }
 }
