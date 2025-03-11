@@ -129,7 +129,9 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
                 new ArrayList<>(),
                 task -> activityModel.remove(task),
                 task -> onEditTask(task),
-                this
+                this,
+                task -> moveTaskUp(task),
+                task -> moveTaskDown(task)
                 );
         activityModel.loadTasksFromRoutine(routine.id());
 
@@ -151,8 +153,14 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
             activityModel.addRoutine(routine);
         }
 
+    }
 
+    private void moveTaskDown(Task task) { //moving task down
+        activityModel.moveTaskDown(task);
+    }
 
+    private void moveTaskUp(Task task) { //moving task up
+        activityModel.moveTaskUp(task);
     }
 
     public void onEditTask(Task task){ // edit button functionality
