@@ -44,6 +44,7 @@ dependencies {
     implementation(project(":lib"))
 
     testImplementation(libs.junit4)
+    testImplementation("org.robolectric:robolectric:4.10.3")
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.ext.espresso.core)
