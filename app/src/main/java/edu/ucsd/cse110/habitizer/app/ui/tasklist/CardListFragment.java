@@ -31,7 +31,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
     private MainViewModel activityModel;
     private FragmentCardListBinding binding;
     private CardListAdapter adapter;
-    private Handler routineTimeHandler = new Handler();
+    public Handler routineTimeHandler = new Handler();
 
     /**
      * ROUTINE:
@@ -41,15 +41,15 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
      */
 
     //time variables
-    private long routineStartTime;
-    private long lastTaskStartTime;
-    private long Pausedtime;
-    private long Resumedtime;
+    public long routineStartTime;
+    public long lastTaskStartTime;
+    public long Pausedtime;
+    public long Resumedtime;
     private Routine routine;
-    private ToggleButton togbtn;
-    private  boolean isPaused = false;
+    public ToggleButton togbtn;
+    public boolean isPaused = false;
 
-    private Runnable routineTimeRunnable = new Runnable() {
+    public Runnable routineTimeRunnable = new Runnable() {
         public void run() {
             if (routine.isStarted() && !routine.isCompleted()&& !isPaused) {
                 long elapsedMillis = System.currentTimeMillis() - routineStartTime;
@@ -78,7 +78,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
         routineTimeHandler.post(routineTimeRunnable);
     }
 
-    private void stopRoutineTimer() {
+    public void stopRoutineTimer() {
         routineTimeHandler.removeCallbacks(routineTimeRunnable);
     }
 
@@ -226,6 +226,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
                 binding.routineButton.setBackgroundColor(color);
             }
         });
+        //pause and resume button
         binding.togbtn.setOnClickListener(v->{
             if(binding.togbtn.isChecked()){
                 Pausedtime = System.currentTimeMillis();
