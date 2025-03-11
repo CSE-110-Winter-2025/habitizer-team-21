@@ -48,9 +48,15 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
     private Routine routine;
     private ToggleButton togbtn;
     private  boolean isPaused = false;
-
+    private boolean useMockTime = false;
+    private long mockElapsedRoutineMillis = 0;
+    private long mockElapsedTaskMillis = 0;
     private Runnable routineTimeRunnable = new Runnable() {
         public void run() {
+            if (useMockTime){ // exits early if mock time is used
+                return;
+            }
+
             if (routine.isStarted() && !routine.isCompleted()&& !isPaused) {
                 long elapsedMillis = System.currentTimeMillis() - routineStartTime;
                 long currentTaskMillis = System.currentTimeMillis() - CardListFragment.this.getLastTaskStartTime();
@@ -75,6 +81,8 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
     private void startRoutineTimer() {
         routineStartTime = System.currentTimeMillis();
         lastTaskStartTime = routineStartTime;
+        useMockTime = false;
+        adapter.setMockTimeState(false, 0); //stops using mock time mode when in "routine mode"
         routineTimeHandler.post(routineTimeRunnable);
     }
 
@@ -95,9 +103,15 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
     }
 
     @Override
-    public void onTaskTimeReset(long newTime){
-        setLastTaskStartTime(newTime);
+    public void onTaskTimeReset(long newTime) {
+        if (useMockTime) {
+            mockElapsedTaskMillis = 0; // resetting task timer in mock mode
+            updateMockTimeDisplay(); // sets mocktime back to 0 when task is complete
+        } else {
+            setLastTaskStartTime(newTime); // routine time mode
+        }
     }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,10 +207,66 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
             dialogFragment.show(getChildFragmentManager(), "RenameRoutineDialog");
         });
 
+        //Mocking time implementation
+        binding.stopRealTimerBtn.setOnClickListener(v -> {
+            if (!useMockTime) {  //switching to mock time mode, stopping routine time
+                useMockTime = true;
+                stopRoutineTimer();
+                mockElapsedRoutineMillis = System.currentTimeMillis() - routineStartTime;
+                mockElapsedTaskMillis = System.currentTimeMillis() - lastTaskStartTime;
+                adapter.setMockTimeState(true, mockElapsedTaskMillis);
+                updateMockTimeDisplay();
+                Toast.makeText(requireContext(), "Switched to mock time", Toast.LENGTH_SHORT).show();
+            } else { //switches from mock to routine time
+                useMockTime = false;
+                routineStartTime = System.currentTimeMillis() - mockElapsedRoutineMillis;
+                lastTaskStartTime = System.currentTimeMillis() - mockElapsedTaskMillis;
+                adapter.setMockTimeState(false, 0);
+                routineTimeHandler.post(routineTimeRunnable);
+                Toast.makeText(requireContext(), "Switched to routine time", Toast.LENGTH_SHORT).show();
+            }
+        });
+        // manually advance by 15 seconds
+        binding.advanceTimeBtn.setOnClickListener(v -> {
+            if (useMockTime) {
+                mockElapsedRoutineMillis += 15000;
+                mockElapsedTaskMillis += 15000;
+                updateMockTimeDisplay();
+            }
+        });
+
         setupMvp();
 
         return binding.getRoot();
     }
+
+    private void updateMockTimeDisplay() {
+        if (!routine.isStarted() || routine.isCompleted()) return;
+
+        adapter.setMockTimeState(true, mockElapsedTaskMillis); // ensure mocktime is used
+
+        // Total routine time
+        int routineMinutes = (int) (mockElapsedRoutineMillis / 60000);
+        int routineSeconds = (int) ((mockElapsedRoutineMillis % 60000) / 1000);
+
+        String totalTimeStr = "Total Time: ";
+        if (routineMinutes > 0) totalTimeStr += routineMinutes + "m ";
+        if (routineSeconds > 0 || routineMinutes == 0) totalTimeStr += routineSeconds + "s";
+
+        binding.totalTime.setText(totalTimeStr.trim());
+        binding.totalTime.setVisibility(View.VISIBLE);
+
+        // Current task time
+        int taskMinutes = (int) (mockElapsedTaskMillis / 60000);
+        int taskSeconds = (int) ((mockElapsedTaskMillis % 60000) / 1000);
+
+        String taskTimeStr = "Current Task: "; //displays current task time in both minutes and seconds
+        if (taskMinutes > 0) taskTimeStr += taskMinutes + "m ";
+        if (taskSeconds > 0 || taskMinutes == 0) taskTimeStr += taskSeconds + "s";
+
+        binding.currTaskTime.setText(taskTimeStr.trim());
+    }
+
 
     private void addTask(Task task, boolean append) {
         if (append) {

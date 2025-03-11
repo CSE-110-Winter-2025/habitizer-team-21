@@ -112,4 +112,29 @@
         app:layout_constraintEnd_toStartOf="@+id/floatingActionButton"
         app:layout_constraintStart_toEndOf="@+id/routine_button" />
 
+    <ImageButton
+        android:id="@+id/stopRealTimerBtn"
+        android:layout_width="24dp"
+        android:layout_height="28dp"
+        android:layout_marginTop="16dp"
+        android:background="#00FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_stop" />
+
+    <ImageButton
+        android:id="@+id/advanceTimeBtn"
+        android:layout_width="24dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="16dp"
+        android:background="#00FFFFFF"
+        app:layout_constraintEnd_toEndOf="@+id/routine_title"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/stopRealTimerBtn"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_advance_time" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

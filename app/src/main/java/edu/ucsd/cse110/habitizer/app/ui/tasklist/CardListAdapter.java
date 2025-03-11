@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.graphics.Paint;
+
+import java.util.HashMap;
 import java.util.function.Consumer;
 
 import androidx.annotation.NonNull;
@@ -24,13 +26,16 @@ interface TaskTimeResetCallback {
 }
 public class CardListAdapter extends ArrayAdapter<Task> {
     private boolean checkEnabled;
-    private final HashSet<Integer> struckThroughTasks = new HashSet<>();
+    private final HashSet<Integer> struckThroughTaskIds = new HashSet<>();
+    private final HashMap<Integer, String> frozenTaskTimes = new HashMap<>();
     private long routineStartTime;
     private long lastTaskTime;
     private long total = 0;
     private final Consumer<Integer> onDeleteClick;
     private final Consumer<Task> onEditClick;
     private TaskTimeResetCallback taskTimeResetCallback;
+    private boolean useMockTime = false;
+    private long mockElapsedTaskMillis = 0;
 
 
 
@@ -62,42 +67,64 @@ public class CardListAdapter extends ArrayAdapter<Task> {
         }
 
         Task task = getItem(position);
+
+        // prepending should not recycle old behavior
+        binding.Task.setPaintFlags(binding.Task.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+        binding.taskTime.setText("");
+        binding.taskTime.setVisibility(View.GONE);
+
         assert task != null;
 
         // Set task text
         binding.Task.setText(task.task());
         binding.taskTime.setVisibility(View.GONE);
 
-        // Applying strikethrough if the task was previously clicked on
-        if (struckThroughTasks.contains(position)) {
+        if (task.id() != null && struckThroughTaskIds.contains(task.id())) {
             binding.Task.setPaintFlags(binding.Task.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            String frozenTime = frozenTaskTimes.get(task.id()); //preserving time after complete and adding tasks when routine running
+            if (frozenTime != null) {
+                binding.taskTime.setText(frozenTime);
+                binding.taskTime.setVisibility(View.VISIBLE);
+            } else {
+                binding.taskTime.setVisibility(View.GONE);
+            }
         }
-
 
         // Toggle strikethrough on click for each task
         binding.getRoot().setOnClickListener(v -> {
-            if (!(struckThroughTasks.contains(position)) && checkEnabled) {
-                struckThroughTasks.add(position);
+            if (!struckThroughTaskIds.contains(task.id()) && checkEnabled) {
+                struckThroughTaskIds.add(task.id());
                 binding.Task.setPaintFlags(binding.Task.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 binding.taskTime.setVisibility(View.VISIBLE);
-                long timeTook = (System.currentTimeMillis() - lastTaskTime);
+
+                long timeTook = useMockTime ? mockElapsedTaskMillis : (System.currentTimeMillis() - lastTaskTime); //checks if mocktime is called
                 int seconds = (int) (timeTook / 1000);
-                long m = timeTook / 60000;
-                long s = (timeTook %60000) / 1000;
-                if (s <= 30){
-                    m++;
-                }
-                lastTaskTime = System.currentTimeMillis();
-                if (taskTimeResetCallback != null){
-                    taskTimeResetCallback.onTaskTimeReset(System.currentTimeMillis());
-                }
-                if(seconds >= 60){
-                    binding.taskTime.setText("Time: " + m + "m");
-                    total += m;
+                String timeText;
+
+                if (useMockTime){ // resetting timer depending on mode
+                    if (taskTimeResetCallback != null){
+                        taskTimeResetCallback.onTaskTimeReset(0); // resets mock task timer
+                    }
                 } else {
-                    int temp = seconds/5;
-                    binding.taskTime.setText("Time: " + temp*5 + "s");
+                    lastTaskTime = System.currentTimeMillis();
+                    if (taskTimeResetCallback != null){
+                        taskTimeResetCallback.onTaskTimeReset(System.currentTimeMillis());
+                    }
                 }
+
+                if (seconds < 60) {
+                    int rounded = (seconds / 5) * 5;
+                    timeText = "Time: " + rounded + "s";
+                } else if (seconds == 60) {
+                    timeText = "Time: 1m";
+                } else {
+                    int minutes = (int) Math.ceil(seconds / 60.0); //rounds time up if over 60 seconds
+                    timeText = "Time: " + minutes + "m";
+                    total += minutes;
+                }
+
+                binding.taskTime.setText(timeText);
+                frozenTaskTimes.put(task.id(), timeText);
 
             }
         });
@@ -134,4 +161,9 @@ public class CardListAdapter extends ArrayAdapter<Task> {
     public void updatePausedTaskTimes(long ptotal){
         lastTaskTime+= ptotal;
     }
+    public void setMockTimeState(boolean isMock, long mockTaskTime) { //updates mock state and current task time
+        this.useMockTime = isMock;
+        this.mockElapsedTaskMillis = mockTaskTime;
+    }
+
 }
