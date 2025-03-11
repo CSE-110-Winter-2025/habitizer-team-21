@@ -153,5 +153,17 @@ public class MainViewModel extends ViewModel {
         taskRepository.save(tasks);
     }
 
+    public void moveTaskUp(Task task) {
+        taskRepository.moveTaskUp(task);
+        loadTasksFromRoutine(task.getRoutineId());
+    }
+
+    public void moveTaskDown(Task task) {
+        taskRepository.moveTaskDown(task);
+        loadTasksFromRoutine(task.getRoutineId());
+    }
+
+
+
 }
 

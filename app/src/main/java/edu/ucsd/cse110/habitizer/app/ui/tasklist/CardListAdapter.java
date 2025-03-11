@@ -31,15 +31,25 @@ public class CardListAdapter extends ArrayAdapter<Task> {
     private final Consumer<Integer> onDeleteClick;
     private final Consumer<Task> onEditClick;
     private TaskTimeResetCallback taskTimeResetCallback;
+    private final Consumer<Task> onMoveUpClick;
+    private final Consumer<Task> onMoveDownClick;
 
 
 
 
-    public CardListAdapter(Context context, List<Task> tasks, Consumer<Integer> onDeleteClick, Consumer<Task> onEditClick, TaskTimeResetCallback callback) {
+    public CardListAdapter(Context context,
+                           List<Task> tasks,
+                           Consumer<Integer> onDeleteClick,
+                           Consumer<Task> onEditClick,
+                           TaskTimeResetCallback callback,
+                           Consumer<Task> onMoveUpClick,
+                           Consumer<Task> onMoveDownClick) {
         super(context, 0, new ArrayList<>(tasks)); // Ensuring a mutable list
         this.onDeleteClick = onDeleteClick != null ? onDeleteClick : id -> {};
         this.onEditClick = onEditClick != null ? onEditClick : task -> {};
         this.taskTimeResetCallback = callback;
+        this.onMoveUpClick = onMoveUpClick != null ? onMoveUpClick : task -> {};
+        this.onMoveDownClick = onMoveDownClick != null ? onMoveDownClick : task -> {};
         checkEnabled = false;
     }
     public void setRoutineStartTime(long time) {
@@ -106,6 +116,14 @@ public class CardListAdapter extends ArrayAdapter<Task> {
                 return;
             }
             onEditClick.accept(task);
+        });
+
+        binding.btnMoveUp.setOnClickListener(v -> {
+            onMoveUpClick.accept(task);
+        });
+
+        binding.btnMoveDown.setOnClickListener(v -> {
+            onMoveDownClick.accept(task);
         });
 
         return binding.getRoot();
