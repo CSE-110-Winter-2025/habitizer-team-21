@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,7 +31,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
     private MainViewModel activityModel;
     private FragmentCardListBinding binding;
     private CardListAdapter adapter;
-    private Handler routineTimeHandler = new Handler();
+    public Handler routineTimeHandler = new Handler();
 
     /**
      * ROUTINE:
@@ -39,13 +41,23 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
      */
 
     //time variables
-    private long routineStartTime;
-    private long lastTaskStartTime;
+    public long routineStartTime;
+    public long lastTaskStartTime;
+    public long Pausedtime;
+    public long Resumedtime;
     private Routine routine;
-
-    private Runnable routineTimeRunnable = new Runnable() {
+    public ToggleButton togbtn;
+    public  boolean isPaused = false;
+    private boolean useMockTime = false;
+    private long mockElapsedRoutineMillis = 0;
+    private long mockElapsedTaskMillis = 0;
+    public Runnable routineTimeRunnable = new Runnable() {
         public void run() {
-            if (routine.isStarted() && !routine.isCompleted()) {
+            if (useMockTime){ // exits early if mock time is used
+                return;
+            }
+
+            if (routine.isStarted() && !routine.isCompleted()&& !isPaused) {
                 long elapsedMillis = System.currentTimeMillis() - routineStartTime;
                 long currentTaskMillis = System.currentTimeMillis() - CardListFragment.this.getLastTaskStartTime();
                 int minutes = (int) (elapsedMillis / 60000);
@@ -69,10 +81,12 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
     private void startRoutineTimer() {
         routineStartTime = System.currentTimeMillis();
         lastTaskStartTime = routineStartTime;
+        useMockTime = false;
+        adapter.setMockTimeState(false, 0); //stops using mock time mode when in "routine mode"
         routineTimeHandler.post(routineTimeRunnable);
     }
 
-    private void stopRoutineTimer() {
+    public void stopRoutineTimer() {
         routineTimeHandler.removeCallbacks(routineTimeRunnable);
     }
 
@@ -89,9 +103,15 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
     }
 
     @Override
-    public void onTaskTimeReset(long newTime){
-        setLastTaskStartTime(newTime);
+    public void onTaskTimeReset(long newTime) {
+        if (useMockTime) {
+            mockElapsedTaskMillis = 0; // resetting task timer in mock mode
+            updateMockTimeDisplay(); // sets mocktime back to 0 when task is complete
+        } else {
+            setLastTaskStartTime(newTime); // routine time mode
+        }
     }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +129,9 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
                 new ArrayList<>(),
                 task -> activityModel.remove(task),
                 task -> onEditTask(task),
-                this
+                this,
+                task -> moveTaskUp(task),
+                task -> moveTaskDown(task)
                 );
         activityModel.loadTasksFromRoutine(routine.id());
 
@@ -130,7 +152,17 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
         if(routine.sortOrder()==-1){
             activityModel.addRoutine(routine);
         }
+
     }
+
+    private void moveTaskDown(Task task) { //moving task down
+        activityModel.moveTaskDown(task);
+    }
+
+    private void moveTaskUp(Task task) { //moving task up
+        activityModel.moveTaskUp(task);
+    }
+
     public void onEditTask(Task task){ // edit button functionality
         if (task.id()==null) return;
 
@@ -183,10 +215,66 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
             dialogFragment.show(getChildFragmentManager(), "RenameRoutineDialog");
         });
 
+        //Mocking time implementation
+        binding.stopRealTimerBtn.setOnClickListener(v -> {
+            if (!useMockTime) {  //switching to mock time mode, stopping routine time
+                useMockTime = true;
+                stopRoutineTimer();
+                mockElapsedRoutineMillis = System.currentTimeMillis() - routineStartTime;
+                mockElapsedTaskMillis = System.currentTimeMillis() - lastTaskStartTime;
+                adapter.setMockTimeState(true, mockElapsedTaskMillis);
+                updateMockTimeDisplay();
+                Toast.makeText(requireContext(), "Switched to mock time", Toast.LENGTH_SHORT).show();
+            } else { //switches from mock to routine time
+                useMockTime = false;
+                routineStartTime = System.currentTimeMillis() - mockElapsedRoutineMillis;
+                lastTaskStartTime = System.currentTimeMillis() - mockElapsedTaskMillis;
+                adapter.setMockTimeState(false, 0);
+                routineTimeHandler.post(routineTimeRunnable);
+                Toast.makeText(requireContext(), "Switched to routine time", Toast.LENGTH_SHORT).show();
+            }
+        });
+        // manually advance by 15 seconds
+        binding.advanceTimeBtn.setOnClickListener(v -> {
+            if (useMockTime) {
+                mockElapsedRoutineMillis += 15000;
+                mockElapsedTaskMillis += 15000;
+                updateMockTimeDisplay();
+            }
+        });
+
         setupMvp();
 
         return binding.getRoot();
     }
+
+    private void updateMockTimeDisplay() {
+        if (!routine.isStarted() || routine.isCompleted()) return;
+
+        adapter.setMockTimeState(true, mockElapsedTaskMillis); // ensure mocktime is used
+
+        // Total routine time
+        int routineMinutes = (int) (mockElapsedRoutineMillis / 60000);
+        int routineSeconds = (int) ((mockElapsedRoutineMillis % 60000) / 1000);
+
+        String totalTimeStr = "Total Time: ";
+        if (routineMinutes > 0) totalTimeStr += routineMinutes + "m ";
+        if (routineSeconds > 0 || routineMinutes == 0) totalTimeStr += routineSeconds + "s";
+
+        binding.totalTime.setText(totalTimeStr.trim());
+        binding.totalTime.setVisibility(View.VISIBLE);
+
+        // Current task time
+        int taskMinutes = (int) (mockElapsedTaskMillis / 60000);
+        int taskSeconds = (int) ((mockElapsedTaskMillis % 60000) / 1000);
+
+        String taskTimeStr = "Current Task: "; //displays current task time in both minutes and seconds
+        if (taskMinutes > 0) taskTimeStr += taskMinutes + "m ";
+        if (taskSeconds > 0 || taskMinutes == 0) taskTimeStr += taskSeconds + "s";
+
+        binding.currTaskTime.setText(taskTimeStr.trim());
+    }
+
 
     private void addTask(Task task, boolean append) {
         if (append) {
@@ -202,6 +290,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
         binding.goalTime.setText("Goal Time: " + Integer.toString(routine.getGoalTime()) + "m");
 
 
+
         binding.routineButton.setOnClickListener(v -> {
             toggleRoutine();
 
@@ -215,6 +304,23 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
                 binding.routineButton.setBackgroundColor(color);
             }
         });
+        binding.togbtn.setOnClickListener(v->{
+            if(binding.togbtn.isChecked()){
+                Pausedtime = System.currentTimeMillis();
+                adapter.disableCheck();
+                stopRoutineTimer();
+                isPaused=true;
+            }else{
+                Resumedtime = System.currentTimeMillis();
+                long ptotal = Resumedtime- Pausedtime;
+                routineStartTime+= ptotal;
+                lastTaskStartTime+= ptotal;
+                isPaused=false;
+                adapter.enableCheck();
+                adapter.updatePausedTaskTimes(ptotal);
+                routineTimeHandler.postDelayed(routineTimeRunnable, 1000);
+            }
+        });
 
     }
 
@@ -224,12 +330,15 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
      */
     private String getRoutineLabel() {
         if (routine.isStarted() && !routine.isCompleted()) {
+            binding.togbtn.setEnabled(true);
             return "End Routine";
         }
         else if (routine.isCompleted()){
+            binding.togbtn.setEnabled(false);
             return "Routine Complete";
         }
         else{
+            binding.togbtn.setEnabled(false);
             return "Start Routine";
         }
     }
@@ -239,7 +348,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
      * Changed function to access Routine information through activityModel
      */
     private void toggleRoutine() {
-        if(routine.isStarted()){
+        if(routine.isStarted()&& isPaused==false){
             routine.complete();
             adapter.disableCheck();
             binding.routineButton.setText(getRoutineLabel());
@@ -248,7 +357,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
             //binding.totalTime.setVisibility(View.VISIBLE);
             stopRoutineTimer();
         }
-        else {
+        else if(isPaused == false) {
             routine.start();
             adapter.enableCheck();
             binding.routineButton.setText(getRoutineLabel());
