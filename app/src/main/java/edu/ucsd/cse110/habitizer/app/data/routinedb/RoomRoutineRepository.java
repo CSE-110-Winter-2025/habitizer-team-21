@@ -24,6 +24,7 @@ public class RoomRoutineRepository implements RoutineRepository {
         return new LiveDataSubjectAdapter<>(routineLiveData);
     }
 
+
     @Override
     public Subject<List<Routine>> findAll() {
         var entityLiveData = routineDao.findAllAsLiveData();

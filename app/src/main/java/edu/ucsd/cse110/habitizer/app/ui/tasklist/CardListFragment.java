@@ -128,7 +128,8 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
          * this.isRoutineStarted = activityModel.isRoutineStarted();
          */
         if(routine.sortOrder()==-1){
-            activityModel.addRoutine(routine);
+            var dialogFragment = RenameRoutineFragment.newInstance(routine);
+            dialogFragment.show(getChildFragmentManager(), "RenameRoutineDialog");
         }
     }
     public void onEditTask(Task task){ // edit button functionality
@@ -272,7 +273,12 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
 
     @Override
     public void onRoutineRenamed(Routine updatedRoutine) {
-        activityModel.saveRoutine(routine);
+        if(routine.sortOrder() ==-1){
+            activityModel.addRoutine(routine);
+        }
+        else {
+            activityModel.saveRoutine(routine);
+        }
         binding.routineTitle.setText(routine.name());
         binding.goalTime.setText("Goal Time: " + Integer.toString(routine.getGoalTime()) + "m");
     }

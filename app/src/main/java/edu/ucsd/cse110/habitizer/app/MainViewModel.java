@@ -134,11 +134,6 @@ public class MainViewModel extends ViewModel {
         routineRepository.save(routine);
     }
 
-    public Subject<Routine> findRoutine(int id){
-        return routineRepository.find(id);
-    }
-
-
     public void remove(Task task) { // deletes task
         if (task != null && task.id() != null){
             taskRepository.remove(task.id());
