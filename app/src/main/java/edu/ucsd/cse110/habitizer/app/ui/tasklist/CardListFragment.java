@@ -60,18 +60,19 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
             if (routine.isStarted() && !routine.isCompleted()&& !isPaused) {
                 long elapsedMillis = System.currentTimeMillis() - routineStartTime;
                 long currentTaskMillis = System.currentTimeMillis() - CardListFragment.this.getLastTaskStartTime();
+
                 int minutes = (int) (elapsedMillis / 60000);
                 int seconds = (int) (currentTaskMillis / 1000);
-                binding.totalTime.setText("Total Time: " + minutes + "m");
+                binding.totalTime.setText("Total Time: " + minutes + "m ");
                 binding.totalTime.setVisibility(View.VISIBLE);
                 if(seconds < 60){
                     //5 seconds intervals
-                    int temp = seconds/5;
+                    //int temp = seconds/5;
 
-                    binding.currTaskTime.setText("Current Task: " + temp*5 + "s");
+                    binding.currTaskTime.setText("Current Task: " + seconds + "s ");
                 } else {
                     int temp = seconds/60;
-                    binding.currTaskTime.setText("Current Task: " + temp + "m");
+                    binding.currTaskTime.setText("Current Task: " + temp + "m ");
                 }
                 routineTimeHandler.postDelayed(this, 1000);
             }
@@ -255,11 +256,8 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
 
         // Total routine time
         int routineMinutes = (int) (mockElapsedRoutineMillis / 60000);
-        int routineSeconds = (int) ((mockElapsedRoutineMillis % 60000) / 1000);
 
-        String totalTimeStr = "Total Time: ";
-        if (routineMinutes > 0) totalTimeStr += routineMinutes + "m ";
-        if (routineSeconds > 0 || routineMinutes == 0) totalTimeStr += routineSeconds + "s";
+        String totalTimeStr = "Total Time: " + routineMinutes + "m ";
 
         binding.totalTime.setText(totalTimeStr.trim());
         binding.totalTime.setVisibility(View.VISIBLE);
@@ -270,7 +268,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
 
         String taskTimeStr = "Current Task: "; //displays current task time in both minutes and seconds
         if (taskMinutes > 0) taskTimeStr += taskMinutes + "m ";
-        if (taskSeconds > 0 || taskMinutes == 0) taskTimeStr += taskSeconds + "s";
+        if (taskSeconds > 0 || taskMinutes == 0) taskTimeStr += taskSeconds + "s ";
 
         binding.currTaskTime.setText(taskTimeStr.trim());
     }
