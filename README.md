@@ -4,7 +4,7 @@ Welcome to Team 21's **Habitizer**, a day-to-day task-tracking app designed to h
 
 ---
 
-## 📌 Features
+## 📌 Some Features
 - ✅ Create & manage daily routines
 - 📊 Track task completion & progress
 - 🔄 Reorder tasks within routines
