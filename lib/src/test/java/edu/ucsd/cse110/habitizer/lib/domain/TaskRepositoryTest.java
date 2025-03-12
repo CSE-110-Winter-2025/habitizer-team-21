@@ -84,6 +84,36 @@ public class TaskRepositoryTest {
     }
 
     @Test
+    public void testGetSortedRoutineTasks() {
+        // Given: Tasks with different routineIds and unordered sortOrders
+        Task task1 = new Task(1, "Task 1", 2, 101);
+        Task task2 = new Task(2, "Task 2", 0, 101);
+        Task task3 = new Task(3, "Task 3", 1, 101);
+        Task task4 = new Task(4, "Task 4", 5, 102); // Different routineId
+
+        dataSource.putTask(task1);
+        dataSource.putTask(task2);
+        dataSource.putTask(task3);
+        dataSource.putTask(task4);
+
+        // When: Fetching sorted tasks for routineId 101
+        List<Task> sortedTasks = taskRepo.getSortedRoutineTasks(101);
+
+        // Then: Tasks are sorted by sortOrder
+        assertEquals(3, sortedTasks.size());
+        assertEquals(0, sortedTasks.get(0).sortOrder());
+        assertEquals(1, sortedTasks.get(1).sortOrder());
+        assertEquals(2, sortedTasks.get(2).sortOrder());
+
+        // Ensure unique sortOrder values
+        for (int i = 0; i < sortedTasks.size(); i++) {
+            assertEquals(i, sortedTasks.get(i).sortOrder());
+        }
+
+        // Ensure tasks from other routines are not in this routine
+        assertFalse(sortedTasks.stream().anyMatch(task -> task.getRoutineId() == 102));
+    }
+    @Test
     public void testMoveTaskUp() {
         Task task1 = new Task(103, "Task 1", 1, 1);
         Task task2 = new Task(104, "Task 2", 2, 1);
