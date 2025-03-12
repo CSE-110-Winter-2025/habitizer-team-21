@@ -112,7 +112,6 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
                 this
                 );
 
-        if(routine.sortOrder() != -1) {
             activityModel.loadTasksFromRoutine(routine.id());
             // Observe task changes from ViewModel
             activityModel.getOrderedTasks().observe(tasks -> {
@@ -121,17 +120,13 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
                 adapter.addAll(new ArrayList<>(tasks)); // Ensure mutable copy
                 adapter.notifyDataSetChanged();
             });
-        }
         /**
          * ROUTINE:
          * Removing these
          * this.isRoutineCompleted = activityModel.isRoutineCompleted();
          * this.isRoutineStarted = activityModel.isRoutineStarted();
          */
-        if(routine.sortOrder()==-1){
-            var dialogFragment = RenameRoutineFragment.newInstance(routine);
-            dialogFragment.show(getChildFragmentManager(), "RenameRoutineDialog");
-        }
+        activityModel.saveRoutine(routine);
     }
     public void onEditTask(Task task){ // edit button functionality
         if (task.id()==null) return;
@@ -274,13 +269,9 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
 
     @Override
     public void onRoutineRenamed(Routine updatedRoutine) {
-        if(routine.sortOrder() ==-1){
-            activityModel.addRoutine(routine);
-        }
-        else {
-            activityModel.saveRoutine(routine);
-        }
+        activityModel.saveRoutine(routine);
         binding.routineTitle.setText(routine.name());
         binding.goalTime.setText("Goal Time: " + Integer.toString(routine.getGoalTime()) + "m");
     }
+
 }

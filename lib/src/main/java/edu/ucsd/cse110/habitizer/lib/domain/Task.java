@@ -19,7 +19,7 @@ public class Task implements Serializable{
     private long timeDisplayed;
     private int routineId;
 
-    public Task(@Nullable Integer id, @NonNull String task, int sortOrder, int routineId){
+    public Task(@Nullable Integer id, @NonNull String task, int sortOrder, @Nullable Integer routineId){
         this.completed = false;
         this.deleted = false;
         this.id = id;
@@ -34,7 +34,7 @@ public class Task implements Serializable{
     public @NonNull String task(){return task;}
 
     public @NonNull Boolean completed(){ return completed;}
-    public int getRoutineId(){return routineId;}
+    public Integer getRoutineId(){return routineId;}
 
     @Override
     public boolean equals(Object o){

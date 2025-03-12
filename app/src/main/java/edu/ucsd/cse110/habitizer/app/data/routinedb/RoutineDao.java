@@ -44,10 +44,10 @@ public interface RoutineDao {
     @Transaction
     default int append(RoutineEntity routine){
         var maxSortOrder = getMaxSortOrder();
-        var newTask = new RoutineEntity(
+        var newRoutine = new RoutineEntity(
                 routine.name, maxSortOrder + 1
         );
-        return Math.toIntExact(insert(newTask));
+        return Math.toIntExact(insert(newRoutine));
     }
 
     @Transaction

@@ -22,13 +22,14 @@ public class CreateTaskFragment extends DialogFragment {
     private FragmentDialogCreateTaskBinding binding;
     private Routine routine;
 
-    public CreateTaskFragment(Routine routine) {
-        this.routine = routine;
+    public CreateTaskFragment() {
         // Required empty public constructor
     }
 
     public static CreateTaskFragment newInstance(Routine routine) {
-        return new CreateTaskFragment(routine);
+        var frag = new CreateTaskFragment();
+        frag.routine = routine;
+        return frag;
     }
 
     @NonNull

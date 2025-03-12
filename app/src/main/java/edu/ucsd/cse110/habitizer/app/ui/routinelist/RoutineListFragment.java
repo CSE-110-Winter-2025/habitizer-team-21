@@ -26,6 +26,7 @@ public class RoutineListFragment extends Fragment {
     private MainViewModel activityModel;
     private FragmentRoutineListBinding binding;
     private RoutineListAdapter adapter;
+    private int sortOrder = 3;
 
     public RoutineListFragment() {
         // Required empty public constructor
@@ -83,8 +84,8 @@ public class RoutineListFragment extends Fragment {
 
         // Open dialog to add new tasks
         binding.floatingActionButton.setOnClickListener(v -> {
-            var newRoutine = Routine.builder().build();
-            //nextId++;
+            var newRoutine = Routine.builder().setId(sortOrder).setSortOrder(sortOrder).build();
+            sortOrder++;
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, new CardListFragment(newRoutine));
             transaction.addToBackStack(null);

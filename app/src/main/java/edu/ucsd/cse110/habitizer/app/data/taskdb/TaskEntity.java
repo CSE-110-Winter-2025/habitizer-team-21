@@ -30,7 +30,7 @@ public class TaskEntity {
     public Boolean deleted = false;
 
     @ColumnInfo(name = "sort_order")
-    public int sortOrder;
+    public Integer sortOrder;
 
     TaskEntity(@NonNull String task, int sortOrder){
         this.task = task;
@@ -47,6 +47,6 @@ public class TaskEntity {
         return temp;
     }
     public @NonNull Task toTask(){
-        return new Task(id,task,sortOrder,routineID);
+        return new Task(id,task,0,routineID);
     }
 }
