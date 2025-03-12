@@ -70,6 +70,9 @@ public class RenameRoutineFragment extends DialogFragment{
     }
 
     private void onNegativeButtonClick(DialogInterface dialog, int which) {
+        if(routine.sortOrder() == -1){
+            activityModel.addRoutine(routine);
+        }
         dialog.cancel();
     }
 

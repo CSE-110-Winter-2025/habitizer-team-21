@@ -111,16 +111,17 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
                 task -> onEditTask(task),
                 this
                 );
-        activityModel.loadTasksFromRoutine(routine.id());
 
-
-        // Observe task changes from ViewModel
-        activityModel.getOrderedTasks().observe(tasks -> {
-            if (tasks == null) return;
-            adapter.clear();
-            adapter.addAll(new ArrayList<>(tasks)); // Ensure mutable copy
-            adapter.notifyDataSetChanged();
-        });
+        if(routine.sortOrder() != -1) {
+            activityModel.loadTasksFromRoutine(routine.id());
+            // Observe task changes from ViewModel
+            activityModel.getOrderedTasks().observe(tasks -> {
+                if (tasks == null) return;
+                adapter.clear();
+                adapter.addAll(new ArrayList<>(tasks)); // Ensure mutable copy
+                adapter.notifyDataSetChanged();
+            });
+        }
         /**
          * ROUTINE:
          * Removing these
