@@ -42,7 +42,6 @@ public class RoutineListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // Initialize the ViewModel
         var modelOwner = requireActivity();
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
@@ -59,6 +58,7 @@ public class RoutineListFragment extends Fragment {
             transaction.addToBackStack(null);
             transaction.commit();
         });
+        this.sortOrder = activityModel.getRMaxSort();
 
         // Observe task changes from ViewModel
         activityModel.getOrderedRoutines().observe(routines -> {

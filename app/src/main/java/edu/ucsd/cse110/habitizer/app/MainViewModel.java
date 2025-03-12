@@ -66,7 +66,7 @@ public class MainViewModel extends ViewModel {
         this.orderedRoutines.setValue(new ArrayList<>());
         this.strikethroughItems = new HashSet<>();
 
-        /*taskRepository.findAll().observe(cards -> {
+        taskRepository.findAll().observe(cards -> {
             if (cards == null) return; // not ready yet, ignore
 
             var newOrderedCards = cards.stream()
@@ -74,7 +74,7 @@ public class MainViewModel extends ViewModel {
                     .collect(Collectors.toList());
 
             orderedTasks.setValue(newOrderedCards);
-        });*/
+        });
 
         routineRepository.findAll().observe(routines -> {
             if (routines == null) return;
@@ -93,6 +93,9 @@ public class MainViewModel extends ViewModel {
     }
     public Subject<List<Routine>> getOrderedRoutines() {
         return orderedRoutines;
+    }
+    public int getRMaxSort(){
+        return routineRepository.maxSort();
     }
 
     public void append(Task task) {

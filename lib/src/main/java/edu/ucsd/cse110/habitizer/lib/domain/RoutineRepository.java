@@ -18,4 +18,5 @@ public interface RoutineRepository {
     void append(Routine routine);
 
     void prepend(Routine routine);
+    int maxSort();
 }

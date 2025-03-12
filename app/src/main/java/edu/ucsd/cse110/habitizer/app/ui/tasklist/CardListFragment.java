@@ -42,6 +42,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
     private long routineStartTime;
     private long lastTaskStartTime;
     private Routine routine;
+    private int routineId;
 
     private Runnable routineTimeRunnable = new Runnable() {
         public void run() {
@@ -79,6 +80,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
     public CardListFragment(Routine routine) {
         // Required empty public constructor
         this.routine = routine;
+        this.routineId = routine.id();
     }
 
     public static CardListFragment newInstance(Routine routine) {
@@ -112,7 +114,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
                 this
                 );
 
-            activityModel.loadTasksFromRoutine(routine.id());
+            activityModel.loadTasksFromRoutine(routineId);
             // Observe task changes from ViewModel
             activityModel.getOrderedTasks().observe(tasks -> {
                 if (tasks == null) return;

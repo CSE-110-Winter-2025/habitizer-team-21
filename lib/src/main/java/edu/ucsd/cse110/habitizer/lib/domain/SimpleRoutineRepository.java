@@ -51,5 +51,8 @@ public class SimpleRoutineRepository implements RoutineRepository {
                 routine.withSortOrder(dataSource.getMinSortOrder()-1)
         );
     }
+    public int maxSort(){
+        return 0;
+    }
 
 }

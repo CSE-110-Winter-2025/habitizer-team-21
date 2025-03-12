@@ -57,6 +57,9 @@ public class RoomRoutineRepository implements RoutineRepository {
     public void prepend(Routine routine) {
         routineDao.prepend(RoutineEntity.fromRoutine(routine));
     }
+    public int maxSort(){
+        return routineDao.getMaxSortOrder();
+    }
 
     @Override
     public void remove(int id) {

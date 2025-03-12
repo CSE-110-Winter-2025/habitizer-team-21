@@ -48,6 +48,6 @@ public class TaskEntity {
         return temp;
     }
     public @NonNull Task toTask(){
-        return new Task(id,task,sortOrder,0);
+        return new Task(id,task,sortOrder,routineID);
     }
 }
