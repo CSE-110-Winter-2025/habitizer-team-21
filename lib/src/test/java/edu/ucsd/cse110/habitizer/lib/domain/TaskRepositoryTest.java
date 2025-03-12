@@ -31,6 +31,26 @@ public class TaskRepositoryTest {
         assertEquals("Test Task", retrievedTask.task());
         assertEquals(10, retrievedTask.sortOrder());
     }
+    @Test
+    public void testFindAllTasks() {
+        Subject<List<Task>> retrievedSubject = taskRepo.findAll();
+        List<Task> retrievedTasks = retrievedSubject.getValue();
+        assertEquals(12, retrievedTasks.size());
+
+        Task task1 = new Task(200, "Task One", 1, 1);
+        Task task2 = new Task(201, "Task Two", 2, 1);
+        Task task3 = new Task(202, "Task Three", 3, 1);
+
+        taskRepo.save(List.of(task1, task2, task3));
+        retrievedSubject = taskRepo.findAll();
+        retrievedTasks = retrievedSubject.getValue();
+        assertNotNull(retrievedTasks);
+        assertEquals(15, retrievedTasks.size());
+        assertTrue(retrievedTasks.contains(task1));
+        assertTrue(retrievedTasks.contains(task2));
+        assertTrue(retrievedTasks.contains(task3));
+    }
+
 
     @Test
     public void testRemoveTask() {
@@ -51,6 +71,16 @@ public class TaskRepositoryTest {
         Task appendedTask = dataSource.getTask(102);
         assertNotNull(appendedTask);
         assertEquals(dataSource.getMaxSortOrder(), appendedTask.sortOrder());
+    }
+
+    @Test
+    public void testPrepend() {
+        Task task = new Task(102, "Prepended Task", 0, 1);
+        taskRepo.prepend(task);
+
+        Task prependedTask = dataSource.getTask(102);
+        assertNotNull(prependedTask);
+        assertEquals(dataSource.getMinSortOrder(), prependedTask.sortOrder());
     }
 
     @Test
