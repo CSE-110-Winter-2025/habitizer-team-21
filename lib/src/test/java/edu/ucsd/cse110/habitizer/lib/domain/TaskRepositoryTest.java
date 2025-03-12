@@ -115,8 +115,8 @@ public class TaskRepositoryTest {
     }
     @Test
     public void testMoveTaskUp() {
-        Task task1 = new Task(103, "Task 1", 1, 1);
-        Task task2 = new Task(104, "Task 2", 2, 1);
+        Task task1 = new Task(103, "Task 1", 1, 49);
+        Task task2 = new Task(104, "Task 2", 2, 49);
         taskRepo.save(List.of(task1, task2));
 
         System.out.println("Before move up:");
@@ -135,8 +135,8 @@ public class TaskRepositoryTest {
 
     @Test
     public void testMoveTaskDown() {
-        Task task1 = new Task(105, "Task 1", 1, 1);
-        Task task2 = new Task(106, "Task 2", 2, 1);
+        Task task1 = new Task(105, "Task 1", 1, 50);
+        Task task2 = new Task(106, "Task 2", 2, 50);
         taskRepo.save(List.of(task1, task2));
 
         System.out.println("Before move down:");
