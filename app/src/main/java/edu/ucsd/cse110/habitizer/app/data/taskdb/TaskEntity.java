@@ -32,12 +32,13 @@ public class TaskEntity {
     @ColumnInfo(name = "sort_order")
     public Integer sortOrder;
 
-    TaskEntity(@NonNull String task, int sortOrder){
+    TaskEntity(@NonNull String task, int sortOrder, int routineID){
         this.task = task;
         this.sortOrder = sortOrder;
+        this.routineID = routineID;
     }
     public static TaskEntity fromTask(@NonNull Task task){
-        var temp = new TaskEntity(task.task(),task.sortOrder());
+        var temp = new TaskEntity(task.task(),task.sortOrder(), task.getRoutineId());
         temp.id = task.id();
         temp.completed = task.completed();
         temp.deleted = task.isDeleted();
@@ -47,6 +48,6 @@ public class TaskEntity {
         return temp;
     }
     public @NonNull Task toTask(){
-        return new Task(id,task,0,routineID);
+        return new Task(id,task,sortOrder,0);
     }
 }
