@@ -14,5 +14,14 @@ import org.robolectric.RobolectricTestRunner;
 public class TimeTest {
     private CardListFragment fragment;
     private long startTime;
+    @Before
+    public void setUp() {
+        Routine testRoutine = new Routine(1, "Test Routine", 0, 30);
+        fragment = new CardListFragment(testRoutine);
+
+        startTime = System.currentTimeMillis();
+        fragment.setLastTaskStartTime(startTime);
+        fragment.routineStartTime = startTime;
+    }
 
 }

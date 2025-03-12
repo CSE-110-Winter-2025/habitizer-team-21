@@ -122,10 +122,13 @@ public class CardListAdapter extends ArrayAdapter<Task> {
                     }
                 }
 
-                if (seconds < 60) {
+                if (seconds <= 55) {
                     int rounded = (seconds / 5) * 5;
+                    if(seconds %5 != 0){
+                        rounded += 5;
+                    }
                     timeText = "Time: " + rounded + "s";
-                } else if (seconds == 60) {
+                } else if (seconds  <= 60 || seconds >= 56) {
                     timeText = "Time: 1m";
                 } else {
                     int minutes = (int) Math.ceil(seconds / 60.0); //rounds time up if over 60 seconds
