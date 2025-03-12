@@ -51,6 +51,8 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
     private boolean useMockTime = false;
     private long mockElapsedRoutineMillis = 0;
     private long mockElapsedTaskMillis = 0;
+    private long elapsedRealTaskMillis = 0;
+
     public Runnable routineTimeRunnable = new Runnable() {
         public void run() {
             if (useMockTime){ // exits early if mock time is used
@@ -59,8 +61,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
 
             if (routine.isStarted() && !routine.isCompleted()&& !isPaused) {
                 long elapsedMillis = System.currentTimeMillis() - routineStartTime;
-                long currentTaskMillis = System.currentTimeMillis() - CardListFragment.this.getLastTaskStartTime();
-
+                long currentTaskMillis = mockElapsedTaskMillis + (System.currentTimeMillis() - CardListFragment.this.getLastTaskStartTime());
                 int minutes = (int) (elapsedMillis / 60000);
                 int seconds = (int) (currentTaskMillis / 1000);
                 binding.totalTime.setText("Total Time: " + minutes + "m ");
@@ -111,6 +112,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
         } else {
             setLastTaskStartTime(newTime); // routine time mode
         }
+        updateMockTimeDisplay();
     }
 
     @Override
@@ -132,7 +134,8 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
                 task -> onEditTask(task),
                 this,
                 task -> moveTaskUp(task),
-                task -> moveTaskDown(task)
+                task -> moveTaskDown(task),
+                this
                 );
         activityModel.loadTasksFromRoutine(routine.id());
 
@@ -219,6 +222,7 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
         //Mocking time implementation
         binding.stopRealTimerBtn.setOnClickListener(v -> {
             if (!useMockTime) {  //switching to mock time mode, stopping routine time
+                elapsedRealTaskMillis += System.currentTimeMillis() - lastTaskStartTime;
                 useMockTime = true;
                 stopRoutineTimer();
                 mockElapsedRoutineMillis = System.currentTimeMillis() - routineStartTime;
@@ -227,9 +231,11 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
                 updateMockTimeDisplay();
                 Toast.makeText(requireContext(), "Switched to mock time", Toast.LENGTH_SHORT).show();
             } else { //switches from mock to routine time
+
                 useMockTime = false;
+                elapsedRealTaskMillis += mockElapsedTaskMillis;
                 routineStartTime = System.currentTimeMillis() - mockElapsedRoutineMillis;
-                lastTaskStartTime = System.currentTimeMillis() - mockElapsedTaskMillis;
+                lastTaskStartTime = System.currentTimeMillis();
                 adapter.setMockTimeState(false, 0);
                 routineTimeHandler.post(routineTimeRunnable);
                 Toast.makeText(requireContext(), "Switched to routine time", Toast.LENGTH_SHORT).show();
@@ -377,10 +383,30 @@ public class CardListFragment extends Fragment implements RenameRoutineFragment.
         this.lastTaskStartTime = startTime;
     }
 
+    public long getMockElapsedTaskMillis() {
+        return mockElapsedTaskMillis;
+    }
+
+    public boolean isUsingMockTime() {
+        return useMockTime;
+    }
+
+    public long getElapsedRealTaskMillis() {
+        return elapsedRealTaskMillis;
+    }
+
     @Override
     public void onRoutineRenamed(Routine updatedRoutine) {
         activityModel.saveRoutine(routine);
         binding.routineTitle.setText(routine.name());
         binding.goalTime.setText("Goal Time: " + Integer.toString(routine.getGoalTime()) + "m");
+    }
+
+    public long getTotalElapsedTaskTime() {
+        if (useMockTime) {
+            return mockElapsedTaskMillis + elapsedRealTaskMillis;
+        } else {
+            return (System.currentTimeMillis() - lastTaskStartTime) + elapsedRealTaskMillis;
+        }
     }
 }
