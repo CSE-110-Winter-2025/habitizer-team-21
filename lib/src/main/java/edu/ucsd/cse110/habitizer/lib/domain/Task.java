@@ -44,8 +44,8 @@ public class Task implements Serializable{
         return Objects.equals(id, tasks.id) && Objects.equals(task, tasks.task) && Objects.equals(sortOrder, tasks.sortOrder);
     }
 
-
-    public int hashcode() {return Objects.hash(id, task, sortOrder);}
+    @Override
+    public int hashCode() {return Objects.hash(id, task, sortOrder);}
 
     public int sortOrder() {
         return sortOrder;

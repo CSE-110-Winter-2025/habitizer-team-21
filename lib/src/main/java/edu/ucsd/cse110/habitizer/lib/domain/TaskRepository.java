@@ -49,7 +49,7 @@ public class TaskRepository {
                 task.withSortOrder(dataSource.getMinSortOrder()-1)
         );
     }
-    private List<Task> getSortedRoutineTasks(int routineId) { // returns a sorted list of task for each routine
+    public List<Task> getSortedRoutineTasks(int routineId) {
         List<Task> routineTasks = new ArrayList<>();
 
         for (Task task : dataSource.getTasks()) {
@@ -58,9 +58,20 @@ public class TaskRepository {
             }
         }
 
-        Collections.sort(routineTasks, Comparator.comparingInt(Task::sortOrder));
+        routineTasks.sort(Comparator.comparingInt(Task::sortOrder));
+
+        // Ensure unique sortOrder values
+        int expectedSortOrder = 0;
+        for (Task task : routineTasks) {
+            if (task.sortOrder() != expectedSortOrder) {
+                dataSource.putTask(task.withSortOrder(expectedSortOrder));
+            }
+            expectedSortOrder++;
+        }
+
         return routineTasks;
     }
+
 
 
     public void moveTaskUp(Task task) { // tasks move up one position
@@ -79,16 +90,22 @@ public class TaskRepository {
         int index = routineTasks.indexOf(task);
         if (index != -1 && index < routineTasks.size() - 1) {
             swapOrderAndSave(task, routineTasks.get(index + 1));
+
         }
     }
 
-    private void swapOrderAndSave(Task a, Task b) { // swap the order after moving and update the datasource to reflect this
-        int tempOrder = a.sortOrder();
-        Task updatedA = a.withSortOrder(b.sortOrder());
-        Task updatedB = b.withSortOrder(tempOrder);
+    private void swapOrderAndSave(Task a, Task b) {
+        int orderA = a.sortOrder();
+        int orderB = b.sortOrder();
 
-        dataSource.putTask(updatedA);
-        dataSource.putTask(updatedB);
+        // Create updated tasks with swapped sort orders
+        Task updatedA = a.withSortOrder(orderB);
+        Task updatedB = b.withSortOrder(orderA);
+
+        // Save the tasks in the correct order
+        dataSource.putTask(updatedB); // Save b first to avoid collision
+        dataSource.putTask(updatedA); // Then save a
     }
+
 
 }
