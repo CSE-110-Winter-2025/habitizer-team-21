@@ -41,8 +41,8 @@ slightly lower than our 0.5 velocity. We predict a velocity of 0.452, and total 
 Iteration 1: We predict velocity of 0.452 since it was our velocity for last milestone. This time we had stories that we
 predicted would take roughly 21 work hours, we expended about 50 work hours, giving a velocity of 0.42. 
 
-Iteration 2: With only 13 hours left for the remaining tasks, we spent roughly 50 work hours, as we spent a lot of time
-going over missing tests & debugging. This gives us a particularly low velocity for this iteration, at 0.26.
+Iteration 2: With only 13 hours left for the remaining tasks, we spent roughly 24 work hours, as we spent a lot of time
+going over missing tests & debugging. This gives us a velocity of 0.542 to end.
 
 
 ### PLEASE GO EASY ON US (😭💔🥺)
